@@ -94,7 +94,7 @@ app.post('/createPledge', function(req, res) {
 });
 
 if (!module.parent) {
-	var port = config('PORT', 3020);
+	var port = config('PORT', 3000);
 
 	app.listen(port, function(err) {
 		if (err) throw err;
