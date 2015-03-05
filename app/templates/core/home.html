@@ -22,8 +22,7 @@
 {{ super() }}
 <script src='//api.tiles.mapbox.com/mapbox.js/v1.4.0/mapbox.js'></script>
 <script>
-	var data = '{{data | safe}}';
-	data = JSON.parse(data);
+  var pledge = "{{ pledge }}";
 </script>
 <script src="{{ static('js/badge-the-world.js') }}"></script>
 {% endblock %}

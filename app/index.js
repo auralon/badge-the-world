@@ -1,7 +1,11 @@
 require('./db');
 
+'use strict';
+
 const config = require('./lib/config');
 const express = require('express');
+const http = require('http');
+const querystring = require('querystring');
 const flash = require('connect-flash');
 const helpers = require('./helpers');
 const middleware = require('./middleware');
@@ -11,7 +15,8 @@ const views = require('./views');
 
 const mongo = require('mongodb');
 const monk = require('monk');
-const db = monk('localhost:27017/btw');
+// const db = monk('mongodb://localhost/badge-the-world');
+const db = monk(process.env.MONGODB);
 
 const app = express();
 const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'templates')), {autoescape: true});
@@ -44,12 +49,11 @@ app.use(staticRoot, express.static(staticDir));
 
 app.get('/', function(req, res) {
 
-	var collection = db.get('pledges');
+	var str = req.url.split('?')[1];
+	var qs = querystring.parse(str);
 
-	collection.find({},{},function(e,data){
-		res.render('core/home.html', {
-			data : JSON.stringify(data)
-		});
+	res.render('core/home.html', {
+		pledge : qs.pledge
 	});
 
 });
@@ -65,12 +69,19 @@ app.post('/createPledge', function(req, res) {
 	var mongoose = require('mongoose');
 	var Pledge   = mongoose.model('Pledge');
 
+	var fiveWays = [];
+	if (req.body.createBadge) fiveWays.push("Create or Design Badges");
+	if (req.body.issueBadge) fiveWays.push("Issue Badges");
+	if (req.body.displayBadge) fiveWays.push("Display Badges");
+	if (req.body.researchBadge) fiveWays.push("Research Badges");
+	if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
+
+	var share = [];
+	if (req.body.shareCaseStyudy) share.push("Share case study");
+	if (req.body.shareOB) share.push("Share OB with your network");
+
 	new Pledge({
-		createBadge : (req.body.createBadge ? true : false),
-		issueBadge : (req.body.issueBadge ? true : false),
-		displayBadge : (req.body.displayBadge ? true : false),
-		researchBadge : (req.body.researchBadge ? true : false),
-		joinBadge : (req.body.joinBadge ? true : false),
+		fiveWays: fiveWays.join(", "),
 		idea : (req.body.idea ? req.body.idea : ""),
 		numberOfPeople : (req.body.numberOfPeople ? req.body.numberOfPeople : ""),
 		location : (req.body.location ? req.body.location : ""),
@@ -79,22 +90,36 @@ app.post('/createPledge', function(req, res) {
 		name : (req.body.name ? req.body.name : ""),
 		twitterHandle : (req.body.twitterHandle ? req.body.twitterHandle : ""),
 		organisation : (req.body.organisation ? req.body.organisation : ""),
-		shareCaseStyudy : (req.body.shareCaseStyudy ? true : false),
-		shareOB : (req.body.shareOB ? true : false),
+		share : share.join(", "),
 		subscribe : (req.body.subscribe ? true : false),
 		created_at : Date.now()
-	}).save( function( err, todo, count ){
+	}).save( function( err, pledge, count ){
 		if (err) {
 			console.log(err);
 		} else {
-			res.redirect('/');
+			res.redirect('/share?pledge=' + pledge._id);
 		}		
 	});
 
 });
+app.get('/share', function(req, res) {
+	var str = req.url.split('?')[1];
+	var qs = querystring.parse(str);
+
+	res.render('core/home.html', {
+		pledge : qs.pledge
+	});
+});
+app.get('/pledges', function(req, res) {
+	var collection = db.get('pledges');
+    collection.find({},{},function(e,data){
+    	res.setHeader('Content-Type', 'application/json');
+    	return res.send(JSON.stringify(data));
+    });
+});
 
 if (!module.parent) {
-	var port = config('PORT', 3000);
+	var port = config('PORT', 3099);
 
 	app.listen(port, function(err) {
 		if (err) throw err;

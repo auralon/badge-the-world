@@ -2,24 +2,20 @@ var mongoose = require( 'mongoose' );
 var Schema   = mongoose.Schema;
 
 var Pledge = new Schema({
-    createBadge		: Boolean,
-    issueBadge		: Boolean,
-    displayBadge	: Boolean,
-    researchBadge	: Boolean,
-    joinBadge		: Boolean,
+    fiveWays        : String,
     idea    		: String,
-    numberOfPeople	: Number,
+    numberOfPeople	: String,
     location		: String,
     postcode		: String,
     email			: String,
     name			: String,
     twitterHandle	: String,
     organisation	: String,
-    shareCaseStyudy	: Boolean,
-    shareOB			: Boolean,
+    share       	: String,
     subscribe		: Boolean,
     created_at 		: Date
 });
 
 mongoose.model( 'Pledge', Pledge );
-mongoose.connect( 'mongodb://localhost/badge-the-world' );
+// mongoose.connect( 'mongodb://localhost/badge-the-world' );
+mongoose.connect(process.env.MONGODB);
