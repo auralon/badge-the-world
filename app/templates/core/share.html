@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<h1>Share</h1>
+{% endblock %}
+
+{% block body %}
+<div class="container center">
+
+	<h2>Thank you for your pledge</h2>
+
+	<p>Now share your pledge with the world!</p>
+
+	<script type="text/javascript" async src="//platform.twitter.com/widgets.js"></script>
+	<p><a href="https://twitter.com/intent/tweet?text=I pledged to badge the world!&url=http://www.badgetheworld.org?pledge={{ pledge }}"><img src="{{ static('images/share.png') }}" /></a></p>
+
+	<p><a href="/?pledge={{ pledge }}">Go to the map and see my pledge!</a></p>
+</div>
+{% endblock %}

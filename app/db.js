@@ -17,5 +17,5 @@ var Pledge = new Schema({
 });
 
 mongoose.model( 'Pledge', Pledge );
-// mongoose.connect( 'mongodb://localhost/badge-the-world' );
-mongoose.connect(process.env.MONGODB);
+mongoose.connect( 'mongodb://localhost/badge-the-world' );
+// mongoose.connect(process.env.MONGODB);

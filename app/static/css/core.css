@@ -174,3 +174,14 @@ h1 {
 .required {
   color: #c43b1d;
 }
+.marker-description pre {
+  font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+  white-space: pre-wrap;       /* CSS 3 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;
+}
+.center {
+  text-align: center;
+}

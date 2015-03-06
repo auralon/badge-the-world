@@ -20,7 +20,7 @@ $(document).ready(function() {
 					return false;
 				}
 
-				var description = entry.idea + '<p>';
+				var description = '<pre>' + entry.idea + '</pre><p>';
 				if (entry.numberOfPeople) {
 					description += '<b>Number of people impacted:</b> ' + entry.numberOfPeople + '<br>';
 				}

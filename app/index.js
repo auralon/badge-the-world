@@ -15,8 +15,8 @@ const views = require('./views');
 
 const mongo = require('mongodb');
 const monk = require('monk');
-// const db = monk('mongodb://localhost/badge-the-world');
-const db = monk(process.env.MONGODB);
+const db = monk('mongodb://localhost/badge-the-world');
+// const db = monk(process.env.MONGODB);
 
 const app = express();
 const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'templates')), {autoescape: true});
@@ -106,7 +106,7 @@ app.get('/share', function(req, res) {
 	var str = req.url.split('?')[1];
 	var qs = querystring.parse(str);
 
-	res.render('core/home.html', {
+	res.render('core/share.html', {
 		pledge : qs.pledge
 	});
 });
