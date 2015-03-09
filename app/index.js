@@ -3,24 +3,34 @@ require('./db');
 'use strict';
 
 const config = require('./lib/config');
+const cookieParser = require('cookie-parser');
+const csrf = require('csurf');
+const bodyParser = require('body-parser');
 const express = require('express');
+const session = require('express-session');
 const http = require('http');
 const querystring = require('querystring');
-const flash = require('connect-flash');
+const connect = require('connect');
 const helpers = require('./helpers');
-const middleware = require('./middleware');
 const nunjucks = require('nunjucks');
 const path = require('path');
 const views = require('./views');
+const csv = require('csv');
+
+const passport = require('passport')
+  , LocalStrategy = require('passport-local').Strategy;
 
 const mongo = require('mongodb');
 const monk = require('monk');
-const db = monk('mongodb://localhost/badge-the-world');
-// const db = monk(process.env.MONGODB);
+// const db = monk('mongodb://localhost/badge-the-world');
+const db = monk(process.env.MONGODB);
 
 const app = express();
 const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'templates')), {autoescape: true});
 env.express(app);
+
+var csrfProtection = csrf({ cookie: true })
+var parseForm = bodyParser.urlencoded({ extended: false })
 
 // Bootstrap the app for reversible routing, and other niceties
 require('../lib/router.js')(app);
@@ -37,13 +47,21 @@ app.use(function (req, res, next) {
 });
 
 app.use(express.compress());
+app.use(connect());
 app.use(express.bodyParser());
-app.use(middleware.session());
-app.use(middleware.csrf());
-app.use(flash());
+app.use(cookieParser());
 
-app.use(helpers.addCsrfToken);
+app.use(session({
+	secret: 'mysecret',
+	saveUninitialized: true,
+	resave: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(helpers.addMessages);
+
+var initPassport = require('./passport/init');
+initPassport(passport);
 
 app.use(staticRoot, express.static(staticDir));
 
@@ -57,10 +75,8 @@ app.get('/', function(req, res) {
 	});
 
 });
-app.get('/pledge', function(req, res) {
-	res.render('core/pledge.html', {
-		_csrf : req.session._csrf
-	});
+app.get('/pledge', csrfProtection, function(req, res) {
+	res.render('core/pledge.html', {});
 });
 app.get('/contact', 'contact', views.contact);
 app.get('/info', 'info', views.info);
@@ -117,6 +133,68 @@ app.get('/pledges', function(req, res) {
     	return res.send(JSON.stringify(data));
     });
 });
+app.get('/admin', function(req, res) {
+	console.log(req.session)
+	res.render('core/admin.html', {
+		user: req.user
+	});
+});
+app.post('/login', passport.authenticate('login', {
+	successRedirect: '/admin',
+	failureRedirect: '/admin',
+	failureFlash: true 
+}));
+app.post('/signup', passport.authenticate('signup', {
+	successRedirect: '/',
+	failureRedirect: '/admin',
+	failureFlash : true  
+}));
+app.get('/logout', function(req, res){
+
+	if (req.user) {
+		var name = req.user.username;
+		console.log("LOGGING OUT " + req.user.username)
+		req.logout();
+	}
+	res.redirect('/');
+	req.session.notice = "You have successfully been logged out " + name + "!";
+});
+
+app.get('/download', function(req, res) {
+	var collection = db.get('pledges');
+	collection.find({},{fields: {_id: 0, subscribe: 0, __v: 0}},function(e,data){
+
+		var headers = { fiveWays: '5 ways to pledge to become a Badge partner',
+		    idea: 'Tell us about your badging ideas',
+		    numberOfPeople: 'How many people will your badging efforts impact?',
+		    location: 'Location',
+		    postcode: 'Zip/Postcode',
+		    email: 'Email Address',
+		    name: 'Name',
+		    twitterHandle: 'Twitter Username',
+		    organisation: 'Organisation',
+		    share: 'Share',
+		    created_at: "Date of pledge",
+		}
+
+		for (var i = data.length - 1; i >= 0; i--) {
+			var date = new Date(data[i].created_at);
+			date = date.toISOString().substr(0, 19).replace('T', ' ');
+			data[i].created_at = date;
+		};
+
+		data.unshift(headers);
+
+		res.attachment('pledges.csv');
+		res.setHeader('Content-Type', 'text/csv');
+		res.end(csv().from(data).to(res));
+	});
+});
+
+app.get('*', function(req, res){
+	res.send('This page does not exist', 404);
+});
+
 
 if (!module.parent) {
 	var port = config('PORT', 3099);

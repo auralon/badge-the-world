@@ -21,12 +21,18 @@ $(document).ready(function() {
 				}
 
 				var description = '<pre>' + entry.idea + '</pre><p>';
+
 				if (entry.numberOfPeople) {
 					description += '<b>Number of people impacted:</b> ' + entry.numberOfPeople + '<br>';
 				}
-				var date = new Date(entry.created_at);
+				
 				if (entry.created_at) {
+					var date = new Date(entry.created_at);
 					description += '<b>Date of pledge:</b> ' + date.toDateString() + '<br>';
+				}
+
+				if (entry.twitterHandle) {
+					description += '<b>Twitter Username:</b> ' + entry.twitterHandle + '<br>';
 				}
 
 				var marker = L.mapbox.markerLayer({

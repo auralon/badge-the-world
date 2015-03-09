@@ -15,7 +15,13 @@ var Pledge = new Schema({
     subscribe		: Boolean,
     created_at 		: Date
 });
-
 mongoose.model( 'Pledge', Pledge );
-mongoose.connect( 'mongodb://localhost/badge-the-world' );
-// mongoose.connect(process.env.MONGODB);
+
+var User = new Schema({
+    username: String,
+    password: String
+});
+mongoose.model( 'User', User );
+
+// mongoose.connect( 'mongodb://localhost/badge-the-world' );
+mongoose.connect(process.env.MONGODB);
