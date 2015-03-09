@@ -8,6 +8,7 @@ const csrf = require('csurf');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const mailer = require('express-mailer');
 const flash = require('connect-flash');
 const http = require('http');
 const querystring = require('querystring');
@@ -19,12 +20,12 @@ const views = require('./views');
 const csv = require('csv');
 
 const passport = require('passport')
-  , LocalStrategy = require('passport-local').Strategy;
+	, LocalStrategy = require('passport-local').Strategy;
 
 const mongo = require('mongodb');
 const monk = require('monk');
-// const db = monk('mongodb://localhost/badge-the-world');
-const db = monk(process.env.MONGODB);
+var rdb = (app.settings.env !== 'development') ? process.env.MONGOLAB_URI : 'mongodb://localhost/badge-the-world';
+const db = monk(rdb);
 
 const app = express();
 const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'templates')), {autoescape: true});
@@ -33,9 +34,22 @@ env.express(app);
 var csrfProtection = csrf({ cookie: true })
 var parseForm = bodyParser.urlencoded({ extended: false })
 
+mailer.extend(app, {
+	from: 'no-reply@badgetheworld.org',
+	host: 'smtp.gmail.com', // hostname 
+	secureConnection: true, // use SSL 
+	port: 465, // port for secure SMTP 
+	transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts 
+	auth: {
+		user: process.env.SMTP_USER,
+		pass: process.env.SMTP_PASSWD
+	}
+});
+
 // Bootstrap the app for reversible routing, and other niceties
 require('../lib/router.js')(app);
 
+/* ----------- Handle static location ----------- */
 var staticDir = path.join(__dirname, '/static');
 var staticRoot = '/static';
 
@@ -51,7 +65,6 @@ app.use(express.compress());
 app.use(connect());
 app.use(express.bodyParser());
 app.use(cookieParser());
-
 app.use(session({
 	secret: 'mysecret',
 	saveUninitialized: true,
@@ -115,7 +128,10 @@ app.post('/createPledge', function(req, res) {
 		if (err) {
 			console.log(err);
 		} else {
-			res.redirect('/share?pledge=' + pledge._id);
+			sendEmail(res, pledge, function(res) {
+				console.log(pledge)
+				res.redirect('/share?pledge=' + pledge._id);
+			});			
 		}		
 	});
 
@@ -130,13 +146,13 @@ app.get('/share', function(req, res) {
 });
 app.get('/pledges', function(req, res) {
 	var collection = db.get('pledges');
-    collection.find({},{},function(e,data){
-    	res.setHeader('Content-Type', 'application/json');
-    	return res.send(JSON.stringify(data));
-    });
+		collection.find({},{},function(e,data){
+			res.setHeader('Content-Type', 'application/json');
+			return res.send(JSON.stringify(data));
+		});
 });
 app.get('/admin', function(req, res) {
-	console.log(req.session)
+	// console.log(req.session)
 	res.render('core/admin.html', {
 		user: req.user
 	});
@@ -167,16 +183,16 @@ app.get('/download', function(req, res) {
 	collection.find({},{fields: {_id: 0, subscribe: 0, __v: 0}},function(e,data){
 
 		var headers = { fiveWays: '5 ways to pledge to become a Badge partner',
-		    idea: 'Tell us about your badging ideas',
-		    numberOfPeople: 'How many people will your badging efforts impact?',
-		    location: 'Location',
-		    postcode: 'Zip/Postcode',
-		    email: 'Email Address',
-		    name: 'Name',
-		    twitterHandle: 'Twitter Username',
-		    organisation: 'Organisation',
-		    share: 'Share',
-		    created_at: "Date of pledge",
+				idea: 'Tell us about your badging ideas',
+				numberOfPeople: 'How many people will your badging efforts impact?',
+				location: 'Location',
+				postcode: 'Zip/Postcode',
+				email: 'Email Address',
+				name: 'Name',
+				twitterHandle: 'Twitter Username',
+				organisation: 'Organisation',
+				share: 'Share',
+				created_at: "Date of pledge",
 		}
 
 		for (var i = data.length - 1; i >= 0; i--) {
@@ -207,4 +223,22 @@ if (!module.parent) {
 	});
 } else {
 	module.exports = http.createServer(app);
+}
+
+var sendEmail = function(res, pledge, callback) {
+	app.mailer.send('core/email.html', {
+		to: 'keith@bluemantis.com', // REQUIRED. This can be a comma delimited string just like a normal email to field. 
+		subject: 'New Pledge!', // REQUIRED.
+		pledge: pledge,
+	}, function (err) {
+		if (err) {
+			// handle error
+			console.log(err);
+			res.send('There was an error sending the email');
+			return;
+		}
+		if (callback && typeof(callback) == "function") {
+			callback(res);
+		}
+	});
 }
