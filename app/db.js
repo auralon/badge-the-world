@@ -23,5 +23,5 @@ var User = new Schema({
 });
 mongoose.model( 'User', User );
 
-var rdb = (app.settings.env !== 'development') ? process.env.MONGOLAB_URI : 'mongodb://localhost/badge-the-world';
+var rdb = (process.env.MONGOLAB_URI !== undefined) ? process.env.MONGOLAB_URI : 'mongodb://localhost/badge-the-world';
 mongoose.connect(rdb);
