@@ -2,6 +2,8 @@ require('./db');
 
 'use strict';
 
+var rdb = (process.env.MONGOLAB_URI !== undefined) ? process.env.MONGOLAB_URI : 'mongodb://localhost/badge-the-world';
+
 const config = require('./lib/config');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
@@ -12,27 +14,23 @@ const mailer = require('express-mailer');
 const flash = require('connect-flash');
 const http = require('http');
 const querystring = require('querystring');
-const connect = require('connect');
 const helpers = require('./helpers');
 const nunjucks = require('nunjucks');
 const path = require('path');
 const views = require('./views');
 const csv = require('csv');
-
 const passport = require('passport')
-	, LocalStrategy = require('passport-local').Strategy;
-
+const LocalStrategy = require('passport-local').Strategy;
 const mongo = require('mongodb');
 const monk = require('monk');
-var rdb = (process.env.MONGOLAB_URI !== undefined) ? process.env.MONGOLAB_URI : 'mongodb://localhost/badge-the-world';
 const db = monk(rdb);
+
+var csrfProtection = csrf({ cookie: false });
+var parseForm = bodyParser.urlencoded({ extended: true });
 
 const app = express();
 const env = new nunjucks.Environment(new nunjucks.FileSystemLoader(path.join(__dirname, 'templates')), {autoescape: true});
 env.express(app);
-
-var csrfProtection = csrf({ cookie: true })
-var parseForm = bodyParser.urlencoded({ extended: false })
 
 mailer.extend(app, {
 	from: 'no-reply@badgetheworld.org',
@@ -49,7 +47,7 @@ mailer.extend(app, {
 // Bootstrap the app for reversible routing, and other niceties
 require('../lib/router.js')(app);
 
-/* ----------- Handle static location ----------- */
+/* ----------- HANDLE STATIC LOCATION ----------- */
 var staticDir = path.join(__dirname, '/static');
 var staticRoot = '/static';
 
@@ -62,7 +60,6 @@ app.use(function (req, res, next) {
 });
 
 app.use(express.compress());
-app.use(connect());
 app.use(express.bodyParser());
 app.use(cookieParser());
 app.use(session({
@@ -72,6 +69,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(csrf());
 app.use(flash());
 app.use(helpers.addMessages);
 
@@ -80,6 +78,9 @@ initPassport(passport);
 
 app.use(staticRoot, express.static(staticDir));
 
+
+
+/* ----------- ROUTING ----------- */
 app.get('/', function(req, res) {
 
 	var str = req.url.split('?')[1];
@@ -91,11 +92,13 @@ app.get('/', function(req, res) {
 
 });
 app.get('/pledge', csrfProtection, function(req, res) {
-	res.render('core/pledge.html', {});
+	res.render('core/pledge.html', {
+		csrfToken: req.csrfToken()
+	});
 });
 app.get('/contact', 'contact', views.contact);
 app.get('/info', 'info', views.info);
-app.post('/createPledge', function(req, res) {
+app.post('/createPledge', csrfProtection, function(req, res) {
 
 	var mongoose = require('mongoose');
 	var Pledge   = mongoose.model('Pledge');
@@ -151,13 +154,14 @@ app.get('/pledges', function(req, res) {
 			return res.send(JSON.stringify(data));
 		});
 });
-app.get('/admin', function(req, res) {
+app.get('/admin', csrfProtection, function(req, res) {
 	// console.log(req.session)
 	res.render('core/admin.html', {
-		user: req.user
+		user: req.user,
+		csrfToken: req.csrfToken()
 	});
 });
-app.post('/login', passport.authenticate('login', {
+app.post('/login', csrfProtection, passport.authenticate('login', {
 	successRedirect: '/admin',
 	failureRedirect: '/admin',
 	failureFlash: true 
@@ -214,6 +218,7 @@ app.get('*', function(req, res){
 });
 
 
+
 if (!module.parent) {
 	var port = config('PORT', 3099);
 
@@ -224,6 +229,8 @@ if (!module.parent) {
 } else {
 	module.exports = http.createServer(app);
 }
+
+
 
 var sendEmail = function(res, pledge, callback) {
 	app.mailer.send('core/email.html', {
