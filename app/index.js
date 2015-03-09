@@ -122,7 +122,7 @@ app.post('/createPledge', function(req, res) {
 		twitterHandle : (req.body.twitterHandle ? req.body.twitterHandle : ""),
 		organisation : (req.body.organisation ? req.body.organisation : ""),
 		share : share.join(", "),
-		subscribe : (req.body.subscribe ? true : false),
+		subscribe : (!req.body.subscribe ? true : false),
 		created_at : Date.now()
 	}).save( function( err, pledge, count ){
 		if (err) {
@@ -227,7 +227,7 @@ if (!module.parent) {
 
 var sendEmail = function(res, pledge, callback) {
 	app.mailer.send('core/email.html', {
-		to: 'keith@bluemantis.com', // REQUIRED. This can be a comma delimited string just like a normal email to field. 
+		to: 'laurie.garrison@digitalme.co.uk,tim.riches@digitalme.co.uk', // REQUIRED. This can be a comma delimited string just like a normal email to field. 
 		subject: 'New Pledge!', // REQUIRED.
 		pledge: pledge,
 	}, function (err) {
