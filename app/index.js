@@ -8,6 +8,7 @@ const csrf = require('csurf');
 const bodyParser = require('body-parser');
 const express = require('express');
 const session = require('express-session');
+const flash = require('connect-flash');
 const http = require('http');
 const querystring = require('querystring');
 const connect = require('connect');
@@ -58,6 +59,7 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 app.use(helpers.addMessages);
 
 var initPassport = require('./passport/init');
