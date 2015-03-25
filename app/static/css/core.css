@@ -202,3 +202,11 @@ margin: 3px 10px 3px 4px;
 }
 
 ul {padding:0px;}
+
+#twitter-share {
+  margin-left: 20px;
+}
+
+.leaflet-popup-content {
+  min-width: 200px;
+}
