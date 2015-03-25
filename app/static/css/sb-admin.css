@@ -219,7 +219,10 @@ ul.alert-dropdown {
     color: #df8a13;
 }
 
-#download-button {
+.button {
     float: right;
     margin-top: 40px;
+}
+.button-pledge {
+    margin-right: 10px;
 }
