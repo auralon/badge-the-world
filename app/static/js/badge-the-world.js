@@ -1,6 +1,12 @@
 $(document).ready(function() {
 
-	var map = L.mapbox.map('map', 'echristensen.map-77cfk1ql', { tileLayer: { noWrap: false} }).setView([10, 10], 3);
+	var map = L.map('map', { tileLayer: { noWrap: false} }).setView([10, 10], 3);
+
+	L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+	    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>',
+	    maxZoom: 18
+	}).addTo(map);
+
 	var pledgeUrl = "/pledges";
 
 	$.getJSON(pledgeUrl, function(data) {
@@ -55,7 +61,6 @@ $(document).ready(function() {
 			}
 
 		}
-
 
 	}
 });
