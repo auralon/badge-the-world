@@ -258,7 +258,9 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/download', function(req, res) {
-	db.Pledge.find({},{_id: 0, subscribe: 0, __v: 0},function(e,data){
+	db.Pledge.find({},{_id: 0, subscribe: 0, __v: 0},function(error,data){
+
+		if (error) return next(err);
 
 		var csvData = [];
 
