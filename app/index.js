@@ -258,9 +258,15 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/download', function(req, res) {
+	console.log("Beginning download");
 	db.Pledge.find({},{_id: 0, subscribe: 0, __v: 0},function(error,data){
 
+		console.log("error: " + error);
+		console.log("data: " + data);
+
 		if (error) return next(err);
+
+		console.log("no error found");
 
 		var csvData = [];
 
@@ -277,9 +283,12 @@ app.get('/download', function(req, res) {
 			created_at: "Date of pledge",
 		}
 
+		console.log("built headers");
+
 		for (var i = data.length - 1; i >= 0; i--) {
 			var date = new Date(data[i].created_at);
 			date = date.toISOString().substr(0, 19).replace('T', ' ');
+			console.log("pushing " + data[i].uid + " to csv");
 			csvData.push({
 				fiveWays: data[i].fiveWays,
 				idea: data[i].idea,
@@ -294,10 +303,17 @@ app.get('/download', function(req, res) {
 			});
 		};
 
+		console.log("unshiting headers");
 		csvData.unshift(headers);
+		console.log("unshifted headers");
 
+		console.log("adding attachment");
 		res.attachment('pledges.csv');
+		console.log("added attachment");
+		console.log("setting header");
 		res.setHeader('Content-Type', 'text/csv');
+		console.log("set header");
+		console.log("responding");
 		res.end(csv().from(csvData).to(res));
 	});
 });
