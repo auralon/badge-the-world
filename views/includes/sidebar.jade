@@ -1,0 +1,38 @@
+aside(class=("#{device}" == "phone" ? "closed" : undefined))
+    .buttons-container
+        button#toggleSidebar(type='button', role='button', aria-label='Toggle Navigation', class=("#{device}" == "phone" ? "lines-button arrow arrow-left closed" : "lines-button arrow arrow-left close"))
+            span.lines
+    #logoContainer
+        img#logo(src='/images/logo.svg', alt='')
+        div
+            h1
+                span Badge
+                | theWorld
+    ul#tabs
+        li.active
+            a(href='#', data-content='pledge') Pledge
+        li
+            a(href='#', data-content='about') About
+        li
+            a(href='#', data-content='twitter') Twitter
+        li
+            a(href='#', data-content='contact') Contact
+        li
+            a(href='#', data-content='search') Search
+    #content.pledge
+        include ./sidebar/pledge.jade
+        include ./sidebar/about.jade
+        include ./sidebar/twitter.jade
+        include ./sidebar/contact.jade
+        include ./sidebar/search.jade
+    #sidebarFooter
+        span.copyright © 2015 Badge the World
+        span
+            a.social(href='#', title='twitter')
+                i.icon-twitter
+            a.social(href='#', title='facebook')
+                i.icon-facebook
+        span
+            img.affiliates(src='/images/digitalme.png', alt='Digital Me Leeds')
+        span
+            img.affiliates(src='/images/openbadges.png', alt='Mozilla Open Badges')

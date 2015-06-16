@@ -1,12 +1,9 @@
-# Badge the World splash page
-
-## Development
------
+# Badge the World
 
 ### Installation
 
-`npm start`
+`npm install`
 
 ### Run the server
 
-`node app`
+`node bin/www`

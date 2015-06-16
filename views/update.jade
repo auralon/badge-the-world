@@ -1,0 +1,132 @@
+extends admin-layout
+
+block admin-content
+	.row
+		.col-lg-12
+			a.btn.button.btn-danger(href='/admin') Cancel Update
+			h1.page-header
+				| Update Pledge
+	p
+		span.required *Required
+	form(action='/updatePledge', method='post', accept-charset='utf-8')
+		input(type='hidden', name='_csrf', value='#{ csrfToken }')
+		input(type='hidden', name='id', value='#{ pledge.uid }')
+		input(type='hidden', name='lat', value='#{ pledge.lat }')
+		input(type='hidden', name='lon', value='#{ pledge.lon }')
+		h2 5 ways to pledge to become a Badge partner:
+		ul.plain
+			li
+				input#createBadge(type='checkbox', name='createBadge', value='Create or Design Badges', role='checkbox', checked=(pledge.fiveWays.indexOf("Create or Design Badges") !== -1 ? "checked" : undefined))
+				| Create or Design Badges
+			li
+				input#issueBadge(type='checkbox', name='issueBadge', value='Issue Badges', role='checkbox', checked=(pledge.fiveWays.indexOf("Issue Badges") !== -1 ? "checked" : undefined))
+				| Issue Badges
+			li
+				input#displayBadge(type='checkbox', name='displayBadge', value='Display Badges', role='checkbox', checked=(pledge.fiveWays.indexOf("Display Badges") !== -1 ? "checked" : undefined))
+				| Display Badges
+			li
+				input#researchBadge(type='checkbox', name='researchBadge', value='Research Badges', role='checkbox', checked=(pledge.fiveWays.indexOf("Research Badges") !== -1 ? "checked" : undefined))
+				| Research Badges
+			li
+				input#joinBadge(type='checkbox', name='joinBadge', value='Join the Badging Conversation', role='checkbox', checked=(pledge.fiveWays.indexOf("Join the Badging Conversation") !== -1 ? "checked" : undefined))
+				| Join the Badging Conversation
+		h2
+			| Tell us about your badging ideas... 
+			span.required *
+		textarea#idea.required.form-control.limit(name='idea', rows='8', cols='55', dir='auto', aria-label='Tell us about your badging ideas...  ', aria-required='true', required='') #{ pledge.idea }
+		h2
+			| How many people will your badging efforts impact? 
+			span *
+		p.sub Be ambitious...
+		input#numberOfPeople.required.form-control.limit(type='text', name='numberOfPeople', value='#{ pledge.numberOfPeople }', dir='auto', aria-label='How many people will your badging efforts impact? Be ambitious... ', aria-required='true', required='', title='')
+		h2 Address:
+		p Where will this happen?
+		div.limit.flex
+			input#address.form-control(type='text', name='address', value='#{ pledge.location }', dir='auto', aria-label='Location: Where will this happen? ', aria-required='true', title='')
+			button#update.btn.btn-info Search
+		#map-container
+		p
+			div.alert.alert-warning.limit(role='alert')
+				i.icon-info-circled
+				|  You can click the marker to drag its position.
+		a(name='map', href='#')
+		h2 Email address
+		input#email.form-control.limit(type='email', name='email', value='#{ pledge.email }', dir='auto', aria-label='Email address ', aria-required='true', title='')
+		h2 Your name
+		input#name.form-control.limit(type='text', name='name', value='#{ pledge.name }', dir='auto', aria-label='Your name ', aria-required='true', title='')
+		h2 Your twitter handle
+		input#twitterHandle.form-control.limit(type='text', name='twitterHandle', value='#{ pledge.twitterHandle }', dir='auto', aria-label='Your twitter handle ', aria-required='true', title='')
+		h2 Organization
+		input#organisation.form-control.limit(type='text', name='organisation', value='#{ pledge.organisation }', dir='auto', aria-label='Organisation ', aria-required='true', title='')
+		h2 Share...
+		ul.plain
+			li
+				input#shareCaseStyudy(type='checkbox', name='shareCaseStyudy', value='Share case study', role='checkbox', checked=(pledge.share.indexOf("Share case study") !== -1 ? "checked" : undefined))
+				| Share case study
+			li
+				input#shareOB(type='checkbox', name='shareOB', value='Share OB with your network', role='checkbox', checked=(pledge.share.indexOf("Share OB with your network") !== -1 ? "checked" : undefined))
+				| Share OB with your network
+		p
+			input#subscribe(type='checkbox', name='subscribe', value='Subscribe', role='checkbox', checked=(pledge.subscribe == 'N' ? "checked" : undefined))
+			| I don't want to receive updates from Badge The World
+		p
+			input#submit(type='submit', name='submit', value='Submit', class="btn btn-success")
+
+
+block admin-scripts
+	script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js')
+	script.
+		$(function() {
+			$('#update').on('click', function(e) {
+				e.preventDefault();
+
+				var $button = $(this);
+
+				$button.hide();
+				$button.text('Search');
+
+				var address = encodeURIComponent($('#address').val());
+				var url = 'http://nominatim.openstreetmap.org/search?q=' + address + '&format=json';
+
+				$.get(url, function(response) {
+					if (typeof response[0] !== "undefined") {
+
+						$button.show();
+
+						var lon = response[0].lon;
+						var lat = response[0].lat;
+
+						setCoordinates(lat, lon);
+
+						$('#map').remove();
+						$('<div id="map" style="height: 300px"></div>').appendTo($('#map-container'));
+
+						var map = L.map('map').setView([lat, lon], 13);
+
+						L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+						    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+						    maxZoom: 18
+						}).addTo(map);
+
+						var marker = new L.marker([lat, lon], {draggable:'true'});
+					    marker.on('dragend', function(event){
+					            var marker = event.target;
+					            var position = marker.getLatLng();
+					            setCoordinates(position.lat, position.lng);
+					    });
+					    map.addLayer(marker);
+
+					} else {
+						alert("Could not find that address");
+						$button.show();
+					}
+				});
+			});
+
+			var setCoordinates = function(lat, lon) {
+				$('input[name="lat"]').val(lat);
+				$('input[name="lon"]').val(lon);
+			}
+
+			$('#update').trigger('click');
+		});
