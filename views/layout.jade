@@ -15,6 +15,10 @@ html
 		script.
 			try{Typekit.load();}catch(e){}
 	body(class=(device == "phone" ? "phone" : undefined))
+		//if lte IE 9
+			#ie-warn
+				img(src='/tile-wide.png')
+				div Please upgrade your browser
 		block content
 
 	script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
