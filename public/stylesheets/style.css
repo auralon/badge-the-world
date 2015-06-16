@@ -548,46 +548,46 @@ hr {
 	flex: 0 0 24px;
 }
 #content a.filter span.calendarToday {
-	background-position-y: 0px;
+	background-position: 0px 0px;
 }
 #content a.filter span.calendarMonth {
-	background-position-y: -24px;
+	background-position: 0px -24px;
 }
 #content a.filter span.calendarYear {
-	background-position-y: -48px;
+	background-position: 0px -48px;
 }
 #content a.filter span.calendarAll {
-	background-position-y: -72px;
+	background-position: 0px -72px;
 }
 #content a.filter span.educationFormal {
-	background-position-y: -96px; 
+	background-position: 0px -96px; 
 }
 #content a.filter span.charityCauses {
-	background-position-y: -120px; 
+	background-position: 0px -120px; 
 }
 #content a.filter span.educationInformal {
-	background-position-y: -144px; 
+	background-position: 0px -144px; 
 }
 #content a.filter span.professionalDevelopment {
-	background-position-y: -168px; 
+	background-position: 0px -168px; 
 }
 #content a.filter span.communityDevelopmentAwareness {
-	background-position-y: -192px; 
+	background-position: 0px -192px; 
 }
 #content a.filter span.internalBusinessOrOrganisationalSchemes {
-	background-position-y: -216px; 
+	background-position: 0px -216px; 
 }
 #content a.filter span.sports {
-	background-position-y: -240px; 
+	background-position: 0px -240px; 
 }
 #content a.filter span.hobbiesAndInterests {
-	background-position-y: -264px; 
+	background-position: 0px -264px; 
 }
 #content a.filter span.vocational {
-	background-position-y: -288px; 
+	background-position: 0px -288px; 
 }
 #content a.filter span.careers {
-	background-position-y: -312px; 
+	background-position: 0px -312px; 
 }
 #content a.filter span:last-of-type {
 	padding-left: 10px;
