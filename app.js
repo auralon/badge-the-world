@@ -42,7 +42,7 @@ passport.serializeUser(Account.serializeUser());
 passport.deserializeUser(Account.deserializeUser());
 
 // mongoose
-var rdb = (process.env.MONGOLAB_URI !== undefined) ? process.env.MONGOLAB_URI : 'mongodb://localhost/passport_local_mongoose_express4';
+var rdb = (process.env.MONGOLAB_URI !== undefined) ? process.env.MONGOLAB_URI : 'mongodb://localhost/badgetheworld';
 mongoose.connect(rdb);
 
 // catch 404 and forward to error handler
