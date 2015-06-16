@@ -15,7 +15,9 @@ html
 		script.
 			try{Typekit.load();}catch(e){}
 	body(class=(device == "phone" ? "phone" : undefined))
-		//if lte IE 9
+		<!--[if lte IE 9]>
+		<div id="ie-warn"><img src="/tile-wide.png"/><div>Please upgrade your browser</div></div>
+		<!--<![endif]-->
 			#ie-warn
 				img(src='/tile-wide.png')
 				div Please upgrade your browser
