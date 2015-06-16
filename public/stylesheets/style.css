@@ -350,13 +350,16 @@ aside.closed #toggleSidebar {
 }
 #content.pledge {
 	background: repeating-linear-gradient( 30deg, #B9D44B, #B9D44B 50%, #B1CF37 50%, #B1CF37 100%);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#B1CF37', EndColorStr='#B1CF37')";
 	border-radius: 0 3px 3px 3px;
 }
 #content.about {
 	background: repeating-linear-gradient( 30deg, #F58D39, #F58D39 50%, #F48123 50%, #F48123 100%);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#F48123', EndColorStr='#F48123')";
 }
 #content.twitter {
 	background: repeating-linear-gradient( 30deg, #55CAE5, #55CAE5 50%, #42C4E2 50%, #42C4E2 100%);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#42C4E2', EndColorStr='#42C4E2')";
 	color: white;
 }
 #content.twitter h4 {
@@ -385,6 +388,7 @@ aside.closed #toggleSidebar {
 }
 #content.contact {
 	background: repeating-linear-gradient( 30deg, #EE1997, #EE1997 50%, #EC008C 50%, #EC008C 100%);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#EC008C', EndColorStr='#EC008C')";
 	color: white;
 }
 hr {
@@ -415,6 +419,7 @@ hr {
 }
 #content.search {
 	background: repeating-linear-gradient( 30deg, #F3F3F3, #F3F3F3 50%, #F2F2F2 50%, #F2F2F2 100%);
+	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#F2F2F2', EndColorStr='#F2F2F2')";
 	border-radius: 3px 0 3px 3px;
 }
 #content.search input[name=search] {
