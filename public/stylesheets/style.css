@@ -872,6 +872,11 @@ body.phone {
 }
 
 #phone-notification {
+	display: none;
+}
+
+.phone #phone-notification {
+	display: block;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -884,11 +889,11 @@ body.phone {
 	transition: top 1000ms ease;
 }
 
-#phone-notification.hide {
+.phone #phone-notification.hide {
 	top: -100px;
 }
 
-#phone-notification i {
+.phone #phone-notification i {
 	font-size: 1.5rem;
 	vertical-align: middle;
 }
