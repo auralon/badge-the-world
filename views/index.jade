@@ -208,8 +208,8 @@ block scripts
 				// open sidebar to pledge tab if required
 				if ($('aside').hasClass('closed')) {
 					$('aside').toggleClass('closed');
-					$(this).toggleClass('closed');
-					$(this).toggleClass('close');
+					$('#toggleSidebar').toggleClass('closed');
+					$('#toggleSidebar').toggleClass('close');
 				}
 
 				$('#tabs li a[data-content=pledge]').trigger('click');
