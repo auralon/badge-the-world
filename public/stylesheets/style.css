@@ -424,6 +424,7 @@ hr {
 	font-size: 1.5rem;
 	font-weight: bold;
 	padding: 10px 10px 5px;
+	box-shadow: none;
 }
 #content.search i {
 	outline: none;
