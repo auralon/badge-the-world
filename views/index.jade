@@ -702,7 +702,7 @@ block scripts
 			||  TWITTER  ||
 			\*===========*/
 
-			$.get('https://ajax.googleapis.com/ajax/services/feed/load?v=2.0&q=https://twitrss.me/twitter_user_to_rss/?user=blue_mantis&num=100', function(response) {
+			$.get('https://ajax.googleapis.com/ajax/services/feed/load?v=2.0&q=https://twitrss.me/twitter_user_to_rss/?user=badgetheworld&num=100', function(response) {
 				if (response.responseStatus == "200") {
 					var entries = response.responseData.feed.entries;
 					for (var i = entries.length - 1; i >= 0; i--) {
