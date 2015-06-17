@@ -8,7 +8,7 @@ block admin-content
 				| Update Pledge
 	p
 		span.required *Required
-	form(action='/updatePledge', method='post', accept-charset='utf-8')
+	form(action='/updatePledge', id='updatePledge', method='post', accept-charset='utf-8')
 		input(type='hidden', name='_csrf', value='#{ csrfToken }')
 		input(type='hidden', name='id', value='#{ pledge.uid }')
 		input(type='hidden', name='lat', value='#{ pledge.lat }')
@@ -34,6 +34,19 @@ block admin-content
 			| Tell us about your badging ideas... 
 			span.required *
 		textarea#idea.required.form-control.limit(name='idea', rows='8', cols='55', dir='auto', aria-label='Tell us about your badging ideas...  ', aria-required='true', required='') #{ pledge.idea }
+		h2
+			| Topic: 
+		select#topic.form-control.limit(name='topic', form='updatePledge')
+			option(value='Careers', selected=(pledge.topic == "Careers" ? true : undefined)) Careers
+			option(value='Charity Causes', selected=(pledge.topic == "Charity Causes" ? true : undefined)) Charity Causes
+			option(value='Community Development Awareness', selected=(pledge.topic == "Community Development Awareness" ? true : undefined)) Community Development Awareness
+			option(value='Education Formal', selected=(pledge.topic == "Education Formal" ? true : undefined)) Education Formal
+			option(value='Education Informal', selected=(pledge.topic == "Education Informal" ? true : undefined)) Education Informal
+			option(value='Hobbies and Interests', selected=(pledge.topic == "Hobbies and Interests" ? true : undefined)) Hobbies and Interests
+			option(value='Internal Business or Organisational Schemes', selected=(pledge.topic == "Internal Business or Organisational Schemes" ? true : undefined)) Internal Business or Organisational Schemes
+			option(value='Professional Development', selected=(pledge.topic == "Professional Development" ? true : undefined)) Professional Development
+			option(value='Sports', selected=(pledge.topic == "Sports" ? true : undefined)) Sports
+			option(value='Vocational', selected=(pledge.topic == "Vocational" ? true : undefined)) Vocational
 		h2
 			| How many people will your badging efforts impact? 
 			span *
@@ -104,17 +117,17 @@ block admin-scripts
 						var map = L.map('map').setView([lat, lon], 13);
 
 						L.tileLayer('http://otile1.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-						    attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-						    maxZoom: 18
+							attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+							maxZoom: 18
 						}).addTo(map);
 
 						var marker = new L.marker([lat, lon], {draggable:'true'});
-					    marker.on('dragend', function(event){
-					            var marker = event.target;
-					            var position = marker.getLatLng();
-					            setCoordinates(position.lat, position.lng);
-					    });
-					    map.addLayer(marker);
+						marker.on('dragend', function(event){
+								var marker = event.target;
+								var position = marker.getLatLng();
+								setCoordinates(position.lat, position.lng);
+						});
+						map.addLayer(marker);
 
 					} else {
 						alert("Could not find that address");

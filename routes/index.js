@@ -201,6 +201,8 @@ router.get('/update', csrfProtection, function(req, res) {
 router.post('/updatePledge', csrfProtection, function(req, res) {
 	if (req.user) {
 
+		console.log(req.body)
+
 		var pledge = Pledge.findOne({ uid: req.body.id}, function (err, doc){
 
 			if (err) {
@@ -222,6 +224,7 @@ router.post('/updatePledge', csrfProtection, function(req, res) {
 
 			doc.fiveWays = fiveWays.join(", ");
 			doc.idea = (req.body.idea ? req.body.idea : "");
+			doc.topic = req.body.topic;
 			doc.numberOfPeople = (req.body.numberOfPeople ? req.body.numberOfPeople : "");
 			doc.location = (req.body.address ? req.body.address : "");
 			doc.lat = (req.body.lat ? req.body.lat : "");
@@ -231,7 +234,7 @@ router.post('/updatePledge', csrfProtection, function(req, res) {
 			doc.twitterHandle = (req.body.twitterHandle ? req.body.twitterHandle : "");
 			doc.organisation = (req.body.organisation ? req.body.organisation : "");
 			doc.share = share.join(", ");
-			doc.subscribe = (!req.body.subscribe ? true : false);
+			doc.subscribe = (!req.body.subscribe ? "Y" : "N");
 			doc.save();
 			res.redirect('/admin');
 		});
