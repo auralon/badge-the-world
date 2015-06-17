@@ -263,24 +263,24 @@ router.post('/deletePledge', csrfProtection, function(req, res) {
 /*
  REGISTER USER PAGE
  */
-router.get('/register', function(req, res) {
-	res.render('register', { });
-});
+// router.get('/register', function(req, res) {
+// 	res.render('register', { });
+// });
 
-/*
- REGISTER USER SUBMISSION
- */
-router.post('/register', function(req, res) {
-	Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
-		if (err) {
-			return res.render('register', { account : account });
-		}
+// /*
+//  REGISTER USER SUBMISSION
+//  */
+// router.post('/register', function(req, res) {
+// 	Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
+// 		if (err) {
+// 			return res.render('register', { account : account });
+// 		}
 
-		passport.authenticate('local')(req, res, function () {
-			res.redirect('/');
-		});
-	});
-});
+// 		passport.authenticate('local')(req, res, function () {
+// 			res.redirect('/');
+// 		});
+// 	});
+// });
 
 /*
  LOGIN PAGE
