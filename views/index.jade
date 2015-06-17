@@ -201,7 +201,8 @@ block scripts
 
 				$.get(url, function(response) {
 					if (typeof response.address !== "undefined") {
-						$('#pledgeCountry').val(response.address.country)
+						$('#address').val(response.display_name);
+						$('#pledgeCountry').val(response.address.country);
 					}
 				});
 
