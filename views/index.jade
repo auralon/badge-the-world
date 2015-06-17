@@ -224,10 +224,10 @@ block scripts
 			var newPledge = null;
 
 			map.on('click', function(e) {
-				dropPledgeMarker(e.latlng.lat, e.latlng.lng);
+				dropPledgeMarker(e.latlng.lat, e.latlng.lng, true);
 			});
 
-			function dropPledgeMarker(lat, lon) {
+			function dropPledgeMarker(lat, lon, detectAddress) {
 				if (newPledge === null) {
 					newPledge = new L.marker([lat, lon], {icon:icons['pledge'], draggable:'true'});
 					newPledge.on('dragend', function(event){
@@ -252,7 +252,7 @@ block scripts
 
 				$.get(url, function(response) {
 					if (typeof response.address !== "undefined") {
-						$('#address').val(response.display_name);
+						if (detectAddress) $('#address').val(response.display_name);
 						$('#pledgeCountry').val(response.address.country);
 					}
 				});
@@ -302,7 +302,7 @@ block scripts
 						var lon = response[0].lon;
 						var lat = response[0].lat;
 
-						dropPledgeMarker(lat, lon);
+						dropPledgeMarker(lat, lon, false);
 						map.setView([lat, lon], 6);
 
 					} else {
