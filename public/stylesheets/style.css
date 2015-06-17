@@ -482,9 +482,12 @@ hr {
 }
 #content.contact input[type=text].half, #content.contact input[type=email].half {
 	width: 48%;
-	float: left;
+	display: inline-block;
 	margin: 0;
 	margin-bottom: 1.5rem;
+}
+#content.contact input[type=text].half:nth-of-type(odd), #content.contact input[type=email].half:nth-of-type(odd) {
+	margin-right: -4px;
 }
 #content.contact input[type=text].half:nth-of-type(even), #content.contact input[type=email].half:nth-of-type(even) {
 	margin-right: 4%;

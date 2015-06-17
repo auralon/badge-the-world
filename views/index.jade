@@ -30,6 +30,57 @@ block scripts
 			var isMobile = ("#{device}" == "phone" ? true : false);
 			var pledges = [];
 			var formComplete = false;
+			var europeanCountries = [
+				'Albania',
+				'Andorra',
+				'Armenia',
+				'Austria',
+				'Azerbaijan',
+				'Belarus',
+				'Belgium',
+				'Bosnia and Herzegovina',
+				'Bulgaria',
+				'Croatia',
+				'Cyprus',
+				'Czech Republic',
+				'Denmark',
+				'Estonia',
+				'Finland',
+				'France',
+				'Georgia',
+				'Germany',
+				'Greece',
+				'Hungary',
+				'Iceland',
+				'Ireland',
+				'Italy',
+				'Kazakhstan',
+				'Latvia',
+				'Liechtenstein',
+				'Lithuania',
+				'Luxembourg',
+				'Macedonia, the former Yugoslav Republic of',
+				'Malta',
+				'Moldova, Republic of',
+				'Monaco',
+				'Montenegro',
+				'Netherlands',
+				'Norway',
+				'Poland',
+				'Portugal',
+				'Romania',
+				'Russian Federation',
+				'San Marino',
+				'Serbia',
+				'Slovakia',
+				'Slovenia',
+				'Spain',
+				'Sweden',
+				'Switzerland',
+				'Turkey',
+				'Ukraine',
+				'United Kingdom'
+			];
 
 
 			/*=======*\
@@ -528,7 +579,7 @@ block scripts
 
 			$('#country').on('change', function(e) {
 				e.preventDefault();
-				country = this.value;
+				country = this.value == '----------' ? 'All' : this.value;
 
 				filter();
 			});
@@ -546,18 +597,23 @@ block scripts
 					});
 
 					$.each(markers, function(i, v) {
-
-						if (($.inArray(markers[i].topic, activeFilters) !== -1) && (timeFilter == "all" || markers[i].timeframe[timeFilter] == true) && ((markers[i].country == country) || country == "All")) {
+						if (
+							($.inArray(markers[i].topic, activeFilters) !== -1) && 
+							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) && 
+							((markers[i].country == country) ||	(country == "All") || ((country == "Europe") && ($.inArray(markers[i].country, europeanCountries) !== -1)))
+							) {
 							markers[i].setOpacity(1);
 						} else {
 							markers[i].setOpacity(0);
 						}
-
 					});
 				} else {
 					// filters off
 					$.each(markers, function(i, marker) {
-						if ((timeFilter == "all" || markers[i].timeframe[timeFilter] == true) && ((markers[i].country == country) || country == "All")) {
+						if (
+							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) && 
+							((markers[i].country == country) ||	(country == "All") || ((country == "Europe") && ($.inArray(markers[i].country, europeanCountries) !== -1)))
+							) {
 							markers[i].setOpacity(1);
 						} else {
 							markers[i].setOpacity(0);
@@ -706,7 +762,7 @@ block scripts
 			$.get('https://ajax.googleapis.com/ajax/services/feed/load?v=2.0&q=https://twitrss.me/twitter_user_to_rss/?user=badgetheworld&num=100', function(response) {
 				if (response.responseStatus == "200") {
 					var entries = response.responseData.feed.entries;
-					for (var i = entries.length - 1; i >= 0; i--) {
+					for (var i = 0; i < entries.length; i++) {
 						var date = entries[i].publishedDate.split(" ");
 						var entry = '<li class="twitterEntry"><h4>' + date[2] + ' ' + date[1] + '</h4>'+
 									entries[i].content + '</li>'
