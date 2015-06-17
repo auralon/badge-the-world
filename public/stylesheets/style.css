@@ -528,7 +528,7 @@ hr {
 	background: white;
 	border-bottom: solid 2px #ddd;
 	border-radius: 3px;
-	display: flex;
+	display: table;
 	float: left;
 	text-decoration: none;
 	box-sizing: border-box;
@@ -549,58 +549,66 @@ hr {
 	border: solid 1px #063A5A;
 	border-bottom: solid 3px #063A5A;
 }
-#content a.filter span:first-of-type {
-	background: url('/images/spritesheet_24x24.png') no-repeat;
+#content a.filter > span:first-of-type {
 	width: 24px;
 	height: 24px;
 	vertical-align: middle;
-	flex: 0 0 24px;
+	display: table-cell;
 }
-#content a.filter span.calendarToday {
+#content a.filter > span:first-of-type span {
+	background: url('/images/spritesheet_24x24.png') no-repeat;
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+	vertical-align: middle;
+}
+#content a.filter > span:first-of-type span.calendarToday {
 	background-position: 0px 0px;
 }
-#content a.filter span.calendarMonth {
+#content a.filter > span:first-of-type span.calendarMonth {
 	background-position: 0px -24px;
 }
-#content a.filter span.calendarYear {
+#content a.filter > span:first-of-type span.calendarYear {
 	background-position: 0px -48px;
 }
-#content a.filter span.calendarAll {
+#content a.filter > span:first-of-type span.calendarAll {
 	background-position: 0px -72px;
 }
-#content a.filter span.educationFormal {
+#content a.filter > span:first-of-type span.educationFormal {
 	background-position: 0px -96px; 
 }
-#content a.filter span.charityCauses {
+#content a.filter > span:first-of-type span.charityCauses {
 	background-position: 0px -120px; 
 }
-#content a.filter span.educationInformal {
+#content a.filter > span:first-of-type span.educationInformal {
 	background-position: 0px -144px; 
 }
-#content a.filter span.professionalDevelopment {
+#content a.filter > span:first-of-type span.professionalDevelopment {
 	background-position: 0px -168px; 
 }
-#content a.filter span.communityDevelopmentAwareness {
+#content a.filter > span:first-of-type span.communityDevelopmentAwareness {
 	background-position: 0px -192px; 
 }
-#content a.filter span.internalBusinessOrOrganisationalSchemes {
+#content a.filter > span:first-of-type span.internalBusinessOrOrganisationalSchemes {
 	background-position: 0px -216px; 
 }
-#content a.filter span.sports {
+#content a.filter > span:first-of-type span.sports {
 	background-position: 0px -240px; 
 }
-#content a.filter span.hobbiesAndInterests {
+#content a.filter > span:first-of-type span.hobbiesAndInterests {
 	background-position: 0px -264px; 
 }
-#content a.filter span.vocational {
+#content a.filter > span:first-of-type span.vocational {
 	background-position: 0px -288px; 
 }
-#content a.filter span.careers {
+#content a.filter > span:first-of-type span.careers {
 	background-position: 0px -312px; 
 }
 #content a.filter span:last-of-type {
-	padding-left: 10px;
+	padding-left: 5px;
 	position: relative;
+	display: table-cell;
+	vertical-align: middle;
 }
 #sidebarFooter {
 	height: 62px;
