@@ -660,19 +660,30 @@ hr {
 	position: absolute;
 	bottom: 0;
 }
-#sidebarFooter span {
+#sidebarFooter > span {
 	position: relative;
 	height: 100%;
-	width: 50%;
+	width: 80%;
 	display: table-cell;
 	vertical-align: middle;
 	text-align: left;
 }
-#sidebarFooter span img.affiliates {
-	width: 45%;
+#sidebarFooter > span:nth-of-type(2) {
+	text-align: right;
+}
+#sidebarFooter > span:first-of-type {
+	width: 20%;
+}
+#sidebarFooter > span > span {
+	width: auto;
 	display: inline-block;
 	margin-top: 0;
-	margin-left: 5%;
+	margin-left: 1.6%;
+	text-align: right;
+}
+#sidebarFooter > span > span img.affiliates {
+	max-height: 40px;
+	max-width: 90%;
 }
 
 /* 
