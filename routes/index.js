@@ -91,7 +91,8 @@ router.get('/', csrfProtection, function (req, res) {
 			showModal: showModal,
 			user : req.user,
 			csrfToken: req.csrfToken(),
-			device: req.device
+			device: req.device,
+			siteUrl: req.headers.host
 		}
 	);
 });
@@ -138,10 +139,6 @@ router.post('/createPledge', csrfProtection, function(req, res) {
 	if (req.body.researchBadge) fiveWays.push("Research Badges");
 	if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
 
-	var share = [];
-	if (req.body.shareCaseStyudy) share.push("Share case study");
-	if (req.body.shareOB) share.push("Share OB with your network");
-
 	var pledge = new Pledge({
 		fiveWays: fiveWays.join(", "),
 		idea : (req.body.idea ? req.body.idea : ""),
@@ -155,7 +152,6 @@ router.post('/createPledge', csrfProtection, function(req, res) {
 		name : (req.body.name ? req.body.name : ""),
 		twitterHandle : (req.body.twitterHandle ? req.body.twitterHandle : ""),
 		organisation : (req.body.organisation ? req.body.organisation : ""),
-		share : share.join(", "),
 		subscribe : (!req.body.subscribe ? "Y" : "N"),
 		created_at : Date.now()
 	}).save( function( err, pledge, count ){
@@ -218,10 +214,6 @@ router.post('/updatePledge', csrfProtection, function(req, res) {
 			if (req.body.researchBadge) fiveWays.push("Research Badges");
 			if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
 
-			var share = [];
-			if (req.body.shareCaseStyudy) share.push("Share case study");
-			if (req.body.shareOB) share.push("Share OB with your network");
-
 			doc.fiveWays = fiveWays.join(", ");
 			doc.idea = (req.body.idea ? req.body.idea : "");
 			doc.topic = req.body.topic;
@@ -233,7 +225,6 @@ router.post('/updatePledge', csrfProtection, function(req, res) {
 			doc.name = (req.body.name ? req.body.name : "");
 			doc.twitterHandle = (req.body.twitterHandle ? req.body.twitterHandle : "");
 			doc.organisation = (req.body.organisation ? req.body.organisation : "");
-			doc.share = share.join(", ");
 			doc.subscribe = (!req.body.subscribe ? "Y" : "N");
 			doc.save();
 			res.redirect('/admin');
@@ -327,7 +318,6 @@ router.get('/download', function(req, res) {
 			name: 'Name',
 			twitterHandle: 'Twitter Username',
 			organisation: 'Organisation',
-			share: 'Share',
 			created_at: "Date of pledge",
 		}
 
@@ -344,7 +334,6 @@ router.get('/download', function(req, res) {
 				name: data[i].name,
 				twitterHandle: data[i].twitterHandle,
 				organisation: data[i].organisation,
-				share: data[i].share,
 				created_at: date
 			});
 		};

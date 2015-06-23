@@ -231,6 +231,10 @@ ul.plain li input, #subscribe {
     margin-right: 10px;
 }
 
+#subscribeContainer {
+    margin: 25px 0;
+}
+
 .navbar-brand {
     padding: 4px 15px;
 }

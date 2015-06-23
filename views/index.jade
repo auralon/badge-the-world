@@ -113,16 +113,17 @@ block scripts
 			});
 
 			var icons = {
-				"Education Formal": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_dark_blue_24x24.png'}),
-				"Charity Causes": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_dark_green_24x24.png'}),
-				"Education Informal": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_light_blue_24x24.png'}),
-				"Professional Development": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_light_green_24x24.png'}),
-				"Community Development Awareness": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_orange_24x24.png'}),
-				"Internal Business or Organisational Schemes": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_pink_24x24.png'}),
-				"Sports": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_purple_24x24.png'}),
-				"Hobbies and Interests": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_red_24x24.png'}),
-				"Vocational": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_wine_24x24.png'}),
-				"Careers": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_yellow_24x24.png'}),
+				"Charitable Project": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_dark_blue_24x24.png'}),
+				"Citizenship": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_dark_green_24x24.png'}),
+				"Education Formal": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_light_blue_24x24.png'}),
+				"Education Informal": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_light_green_24x24.png'}),
+				"Engagement": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_orange_24x24.png'}),
+				"Other": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_pink_24x24.png'}),
+				"Social Inclusion": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_purple_24x24.png'}),
+				"Workforce Development": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_red_24x24.png'}),
+				//- "Vocational": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_wine_24x24.png'}),
+				//- "Careers": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_yellow_24x24.png'}),
+				"Unassigned": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_grey_24x24.png'}),
 				pledge: new LeafIcon({iconUrl: '/images/pledge-marker.png'})
 			}
 
@@ -152,10 +153,10 @@ block scripts
 
 				if (entry.lat !== "" && entry.lon !== "") {
 
-					var description = '<pre>' + entry.idea.replace(/(?:\\[rn])+/g, "\r\n\r\n"); + '</pre><p>';
+					var description = '<pre>' + entry.idea.replace(/(?:\\[rn])+/g, "\r\n\r\n") + '</pre>';
 
 					if (entry.numberOfPeople) {
-						description += '<br><br><b>Number of people impacted:</b> ' + entry.numberOfPeople + '<br>';
+						description += '<b>Number of people impacted:</b> ' + entry.numberOfPeople + '<br>';
 					}
 
 					if (entry.created_at) {
@@ -171,8 +172,8 @@ block scripts
 						description += '<b>Twitter Username:</b> <a href="https://twitter.com/' + entry.twitterHandle + '">@' + entry.twitterHandle + '</a><br>';
 					}
 
-					description += '<div class="links"><a href="http://www.badgetheworld.org/?pledge=' + entry.uid + '"><i class="icon-link"></i>permalink</a> ' +
-								   '<a href="https://twitter.com/intent/tweet?text=Check out this pledge!&via=badgetheworld&hashtags=OpenBadges&url=http://www.badgetheworld.org?pledge=' + entry.uid + '" id="twitter-share"><i class="icon-twitter"></i>share on twitter</a></div>';
+					description += '<div class="links"><a href="http://#{siteUrl}/?pledge=' + entry.uid + '"><i class="icon-link"></i>permalink</a> ' +
+								   '<a href="https://twitter.com/intent/tweet?text=Check out this pledge!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=' + entry.uid + '" id="twitter-share"><i class="icon-twitter"></i>share on twitter</a></div>';
 
 					var marker = L.marker(
 						[ entry.lat, entry.lon ],
@@ -215,6 +216,22 @@ block scripts
 				}
 
 			}
+
+
+			/*=============*\
+			||  GEOLOCATE  ||
+			\*=============*/
+
+			$('#addressContainer a').on('click', function(e) {
+				e.preventDefault();
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						dropPledgeMarker(position.coords.latitude, position.coords.longitude, true);
+					});
+				} else {
+					notify("Geolocation is not supported by this browser.", "error");
+				}
+			});
 
 
 			/*=================================*\
@@ -354,7 +371,7 @@ block scripts
 						$('#stageFour').fadeIn(function() {
 							$('#pledge').mCustomScrollbar('scrollTo','bottom');
 
-							var twitterShareUrl = "https://twitter.com/intent/tweet?text=I pledged to badge the world!&via=badgetheworld&hashtags=OpenBadges&url=http://www.badgetheworld.org?pledge=" + response.pledge.uid;
+							var twitterShareUrl = "https://twitter.com/intent/tweet?text=I pledged to badge the world!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=" + response.pledge.uid;
 							$('#twitterShare').attr('href', twitterShareUrl);
 						});
 
@@ -545,6 +562,8 @@ block scripts
 				e.preventDefault();
 				var uid = $(this).data('uid');
 
+				if (isMobile) $('#toggleSidebar').trigger('click');
+
 				$.each(markers, function(i, marker) {
 					if (marker.uid == uid) {
 						map.setView([marker.getLatLng().lat, marker.getLatLng().lng], 6);
@@ -596,6 +615,8 @@ block scripts
 						activeFilters.push($(v).data('topic'));
 					});
 
+					console.log(activeFilters)
+
 					$.each(markers, function(i, v) {
 						if (
 							($.inArray(markers[i].topic, activeFilters) !== -1) && 
@@ -634,7 +655,6 @@ block scripts
 					});
 				});
 			})(jQuery);
-
 
 			/*==================*\
 			||  SIDEBAR TOGGLE  ||

@@ -50,7 +50,6 @@ var Pledge = new Schema({
     name            : String,
     twitterHandle   : String,
     organisation    : String,
-    share           : String,
     subscribe       : String,
     created_at      : Date
 });

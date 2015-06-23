@@ -35,22 +35,28 @@
             h2
                 | Topic: 
             select#topic(name='topic', form='createPledge')
-                option(value='Careers') Careers
-                option(value='Charity Causes') Charity Causes
-                option(value='Community Development Awareness') Community Development Awareness
+                option(value='Charitable Project') Charitable Project
+                option(value='Citizenship') Citizenship
                 option(value='Education Formal') Education Formal
                 option(value='Education Informal') Education Informal
-                option(value='Hobbies and Interests') Hobbies and Interests
-                option(value='Internal Business or Organisational Schemes') Internal Business or Organisational Schemes
-                option(value='Professional Development') Professional Development
-                option(value='Sports') Sports
-                option(value='Vocational') Vocational
+                option(value='Engagement') Engagement
+                option(value='Other') Other
+                option(value='Social Inclusion') Social Inclusion
+                option(value='Workforce Development') Workforce Development
             h2
                 | How many people will your badging efforts impact? 
                 span.required *
             input#numberOfPeople.required.half(type='text', name='numberOfPeople', value='', dir='auto', aria-label='How many people will your badging efforts impact? Be ambitious... ', aria-required='true', placeholder='Be ambitious...', title='', required='')
-            h2 Address:
-            input#address(type='text', name='address', value='', dir='auto', aria-label='Location: Where will this happen? ', placeholder='Where will this happen?', aria-required='true', title='', required='')
+            h2#addressHeader Address:
+            #addressContainer
+                span
+                    p
+                        | Click the target (
+                        i.icon-target
+                        | ) to detect and use your current location.
+                    a(href='#')
+                        i.icon-target
+                input#address(type='text', name='address', value='', dir='auto', aria-label='Location: Where will this happen? ', placeholder='Where will this happen?', aria-required='true', title='', required='')
             a#continue1.button Continue
         #stageTwo.section(style='display: none')
             p.country
@@ -319,22 +325,16 @@
                 | ) to drag its position, if required.
             button#continue2 Continue
         #stageThree.section(style='display: none')
-            h2 Email address
+            h2 Email address:
             input#email(type='email', name='email', value='', dir='auto', aria-label='Email address ', aria-required='true', title='', required='')
-            h2 Your name
+            h2 Your name:
             input#name(type='text', name='name', value='', dir='auto', aria-label='Your name ', aria-required='true', title='', required='')
-            h2 Your twitter handle
-            input#twitterHandle(type='text', name='twitterHandle', value='', dir='auto', aria-label='Your twitter handle ', aria-required='true', title='', required='')
-            h2 Organization
+            h2 Your twitter handle:
+            #twitterHandleContainer
+                span @
+                input#twitterHandle(type='text', name='twitterHandle', value='', dir='auto', aria-label='Your twitter handle ', aria-required='true', title='', required='')
+            h2 Organization:
             input#organisation(type='text', name='organisation', value='', dir='auto', aria-label='Organisation ', aria-required='true', title='', required='')
-            h2 Share...
-            ul
-                li
-                    input#shareCaseStyudy(type='checkbox', name='shareCaseStyudy', value='Share case study', role='checkbox')
-                    | Share case study
-                li
-                    input#shareOB(type='checkbox', name='shareOB', value='Share OB with your network', role='checkbox')
-                    | Share OB with your network
             p
                 input#subscribe(type='checkbox', name='subscribe', value='Subscribe', role='checkbox')
                 | I don't want to receive updates from Badge The World

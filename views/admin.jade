@@ -46,7 +46,6 @@ block admin-scripts
 
 			if (window.confirm("Are you sure you want to delete this pledge?")) {
 				$.post(url,{id:id, _csrf: $('form#deletePledge input[name=_csrf]').val()}, function(response) {
-					console.log(response, response.status)
 					if (response.status == "ok") window.location = "/admin";
 				});
 			}

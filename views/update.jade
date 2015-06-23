@@ -37,16 +37,15 @@ block admin-content
 		h2
 			| Topic: 
 		select#topic.form-control.limit(name='topic', form='updatePledge')
-			option(value='Careers', selected=(pledge.topic == "Careers" ? true : undefined)) Careers
-			option(value='Charity Causes', selected=(pledge.topic == "Charity Causes" ? true : undefined)) Charity Causes
-			option(value='Community Development Awareness', selected=(pledge.topic == "Community Development Awareness" ? true : undefined)) Community Development Awareness
+			option(value='Charitable Project', selected=(pledge.topic == "Charitable Project" ? true : undefined)) Charitable Project
+			option(value='Citizenship', selected=(pledge.topic == "Citizenship" ? true : undefined)) Citizenship
 			option(value='Education Formal', selected=(pledge.topic == "Education Formal" ? true : undefined)) Education Formal
 			option(value='Education Informal', selected=(pledge.topic == "Education Informal" ? true : undefined)) Education Informal
-			option(value='Hobbies and Interests', selected=(pledge.topic == "Hobbies and Interests" ? true : undefined)) Hobbies and Interests
-			option(value='Internal Business or Organisational Schemes', selected=(pledge.topic == "Internal Business or Organisational Schemes" ? true : undefined)) Internal Business or Organisational Schemes
-			option(value='Professional Development', selected=(pledge.topic == "Professional Development" ? true : undefined)) Professional Development
-			option(value='Sports', selected=(pledge.topic == "Sports" ? true : undefined)) Sports
-			option(value='Vocational', selected=(pledge.topic == "Vocational" ? true : undefined)) Vocational
+			option(value='Engagement', selected=(pledge.topic == "Engagement" ? true : undefined)) Engagement
+			option(value='Other', selected=(pledge.topic == "Other" ? true : undefined)) Other
+			option(value='Social Inclusion', selected=(pledge.topic == "Social Inclusion" ? true : undefined)) Social Inclusion
+			option(value='Workforce Development', selected=(pledge.topic == "Workforce Development" ? true : undefined)) Workforce Development
+			option(value='Unassigned', selected=(pledge.topic == "Unassigned" ? true : undefined)) Unassigned
 		h2
 			| How many people will your badging efforts impact? 
 			span *
@@ -71,15 +70,7 @@ block admin-content
 		input#twitterHandle.form-control.limit(type='text', name='twitterHandle', value='#{ pledge.twitterHandle }', dir='auto', aria-label='Your twitter handle ', aria-required='true', title='')
 		h2 Organization
 		input#organisation.form-control.limit(type='text', name='organisation', value='#{ pledge.organisation }', dir='auto', aria-label='Organisation ', aria-required='true', title='')
-		h2 Share...
-		ul.plain
-			li
-				input#shareCaseStyudy(type='checkbox', name='shareCaseStyudy', value='Share case study', role='checkbox', checked=(pledge.share.indexOf("Share case study") !== -1 ? "checked" : undefined))
-				| Share case study
-			li
-				input#shareOB(type='checkbox', name='shareOB', value='Share OB with your network', role='checkbox', checked=(pledge.share.indexOf("Share OB with your network") !== -1 ? "checked" : undefined))
-				| Share OB with your network
-		p
+		p#subscribeContainer
 			input#subscribe(type='checkbox', name='subscribe', value='Subscribe', role='checkbox', checked=(pledge.subscribe == 'N' ? "checked" : undefined))
 			| I don't want to receive updates from Badge The World
 		p

@@ -33,7 +33,7 @@ var server = http.createServer(app);
 /**
  * Create the virtual hosts
  */
-var localHost = createVirtualHost("www.badgetheworld.local", ".");
+// var localHost = createVirtualHost("www.badgetheworld.dev", ".");
 
 /**
  * Use the virtual hosts

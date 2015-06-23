@@ -44,10 +44,9 @@ a:hover {
 a.social i {
 	font-size: 1.2rem;
 	position: relative;
-	top: 13px;
 }
 a.social:first-of-type i {
-	margin-left: 4%;
+	margin-left: 1%;
 }
 input[type=checkbox], input[type=radio] {
 	margin-right: 15px;
@@ -353,6 +352,32 @@ aside.closed #toggleSidebar {
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#B1CF37', EndColorStr='#B1CF37')";
 	border-radius: 0 3px 3px 3px;
 }
+#twitterHandleContainer, #addressContainer {
+	position: relative;
+}
+#twitterHandleContainer span {
+	position: absolute;
+	font-size: 1rem;
+	padding: 10px;
+}
+#twitterHandle {
+	padding-left: 28px !important;
+}
+#addressHeader {
+	margin-bottom: 0;
+}
+#addressContainer a {
+	position: absolute;
+	right: 4px;
+	top: 39px;
+	font-size: 1.5rem;
+}
+#addressContainer span p {
+	margin: 0 0 15px;
+}
+#content #address {
+	padding: 10px 40px 10px 10px;
+}
 #content.about {
 	background: repeating-linear-gradient( 30deg, #F58D39, #F58D39 50%, #F48123 50%, #F48123 100%);
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#F48123', EndColorStr='#F48123')";
@@ -391,6 +416,10 @@ aside.closed #toggleSidebar {
 	-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#EC008C', EndColorStr='#EC008C')";
 	color: white;
 }
+#contactForm {
+	width: 100%;
+	position: relative;
+}
 hr {
 	margin: 5% 0;
 }
@@ -406,6 +435,7 @@ hr {
 	display: inline-block;
 	font-weight: bold;
 	font-size: 0.9rem;
+	vertical-align: top;
 }
 #contactDetails ul li a {
 	color: white;
@@ -413,6 +443,17 @@ hr {
 }
 #contactDetails ul li span {
 	color: #F57DC4;
+}
+#contactLink {
+	width: 100%;
+	text-align: center;
+	margin-top: 35px;
+}
+#contactLink a {
+	text-decoration: none;
+	color: white;
+	font-weight: bold;
+	font-size: 0.9rem;
 }
 #searchBox {
 	position: relative;
@@ -444,6 +485,7 @@ hr {
 	display: none;
 	height: 100%;
 	padding-right: 4%;
+	overflow: hidden;
 }
 #content .content:first-of-type {
 	display: block;
@@ -482,12 +524,9 @@ hr {
 }
 #content.contact input[type=text].half, #content.contact input[type=email].half {
 	width: 48%;
-	display: inline-block;
+	float: left;
 	margin: 0;
 	margin-bottom: 1.5rem;
-}
-#content.contact input[type=text].half:nth-of-type(odd), #content.contact input[type=email].half:nth-of-type(odd) {
-	margin-right: -4px;
 }
 #content.contact input[type=text].half:nth-of-type(even), #content.contact input[type=email].half:nth-of-type(even) {
 	margin-right: 4%;
@@ -574,28 +613,28 @@ hr {
 #content a.filter > span:first-of-type span.calendarAll {
 	background-position: 0px -72px;
 }
-#content a.filter > span:first-of-type span.educationFormal {
+#content a.filter > span:first-of-type span.charitableProject {
 	background-position: 0px -96px; 
 }
-#content a.filter > span:first-of-type span.charityCauses {
+#content a.filter > span:first-of-type span.citizenship {
 	background-position: 0px -120px; 
 }
-#content a.filter > span:first-of-type span.educationInformal {
+#content a.filter > span:first-of-type span.educationFormal {
 	background-position: 0px -144px; 
 }
-#content a.filter > span:first-of-type span.professionalDevelopment {
+#content a.filter > span:first-of-type span.educationInformal {
 	background-position: 0px -168px; 
 }
-#content a.filter > span:first-of-type span.communityDevelopmentAwareness {
+#content a.filter > span:first-of-type span.engagement {
 	background-position: 0px -192px; 
 }
-#content a.filter > span:first-of-type span.internalBusinessOrOrganisationalSchemes {
+#content a.filter > span:first-of-type span.other {
 	background-position: 0px -216px; 
 }
-#content a.filter > span:first-of-type span.sports {
+#content a.filter > span:first-of-type span.socialInclusion {
 	background-position: 0px -240px; 
 }
-#content a.filter > span:first-of-type span.hobbiesAndInterests {
+#content a.filter > span:first-of-type span.workforceDevelopment {
 	background-position: 0px -264px; 
 }
 #content a.filter > span:first-of-type span.vocational {
@@ -603,6 +642,9 @@ hr {
 }
 #content a.filter > span:first-of-type span.careers {
 	background-position: 0px -312px; 
+}
+#content a.filter > span:first-of-type span.unassigned {
+	background-position: 0px -336px; 
 }
 #content a.filter span:last-of-type {
 	padding-left: 5px;
@@ -621,18 +663,16 @@ hr {
 #sidebarFooter span {
 	position: relative;
 	height: 100%;
-}
-#sidebarFooter span.copyright {
+	width: 50%;
 	display: table-cell;
-	line-height: 100%;
 	vertical-align: middle;
-	padding-left: 2%;
-	font-size: 0.6rem;
+	text-align: left;
 }
 #sidebarFooter span img.affiliates {
-	height: 32px;
-	float: right;
-	margin-top: 14px;
+	width: 45%;
+	display: inline-block;
+	margin-top: 0;
+	margin-left: 5%;
 }
 
 /* 
@@ -672,24 +712,35 @@ hr {
  SCROLLBARS
  */
 .mCustomScrollBox {
-	overflow: visible;
+    overflow: visible;
+}
+.mCSB_container {
+    width: 100%;
+}
+.mCS_no_scrollbar .mCSB_container {
+    width: auto;
 }
 .mCS-dark-3.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
-	background-color: #000;
-	background-color: rgba(0, 0, 0, 0.25);
+    background-color: #000;
+    background-color: rgba(0, 0, 0, 0.25);
 }
 .mCS-dark-3.mCSB_scrollTools .mCSB_dragger:hover .mCSB_dragger_bar {
-	background-color: #000;
-	background-color: rgba(0, 0, 0, 0.35);
+    background-color: #000;
+    background-color: rgba(0, 0, 0, 0.35);
 }
 .mCSB_scrollTools_vertical {
-	right: -20px;
+    right: -20px;
 }
 .mCSB_inside>.mCSB_container {
-	margin-right: 3%;
+    padding-right: 3%;
+    box-sizing: border-box;
+}
+.mCS_no_scrollbar .mCSB_inside>.mCSB_container {
+    padding-right: 0;
+    box-sizing: initial;
 }
 .mCSB_scrollTools_vertical .mCSB_dragger{
-	height: 30px;
+    height: 30px;
 }
 
 /*
@@ -726,7 +777,6 @@ hr {
 	left: 840px;
 	top: 940px;
 }
-
 select {
 	width: 99%;
 	padding: 1.5%;
@@ -735,7 +785,6 @@ select {
 	border: none;
 	box-sizing: border-box;
 }
-
 #topic {
 	width: 100%;
 }
@@ -876,27 +925,11 @@ body.phone {
 	margin: 8px auto;
 }
 
-.phone #sidebarFooter span.copyright {
-	width: 40%;
-}
-
-.phone #sidebarFooter span img.affiliates {
-	height: initial;
-	margin-top: 20px;
-	width: 32%;
-}
-
-.phone #content.contact input[type=text].half:nth-of-type(even), .phone #content.contact input[type=email].half:nth-of-type(even) {
-	margin-right: 4%;
-}
-
-.phone #content.contact input[type=text].half:nth-of-type(odd), .phone #content.contact input[type=email].half:nth-of-type(odd) {
-	margin-right: -4px;
-}
-
 .phone #content.contact input[type=text].half, .phone #content.contact input[type=email].half {
 	display: inline-block;
 	float: none;
+	width: 100%;
+	margin-right: 0;
 }
 
 .phone #fiveWays li {
@@ -937,6 +970,18 @@ body.phone {
 .phone #phone-notification i {
 	font-size: 1.5rem;
 	vertical-align: middle;
+}
+
+.phone #sidebarFooter span {
+	text-align: center;
+}
+
+.phone  #sidebarFooter span:first-of-type {
+	width: 35%;
+}
+
+.phone  #sidebarFooter span:nth-of-type(2) {
+	width: 65%;
 }
 
 @media screen and (max-width: 768px) {
