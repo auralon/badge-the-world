@@ -2,8 +2,6 @@ $(document).ready(function() {
 	var pledgeUrl = "/getPledges";
 	$.getJSON(pledgeUrl, function(data) {
 
-		console.log(data)
-
 		for (var i = 0; i <=  data.length -1; i++) {
 
 			var row = '<tr>'
