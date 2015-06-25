@@ -90,7 +90,7 @@ block admin-scripts
 				$button.text('Search');
 
 				var address = encodeURIComponent($('#address').val());
-				var url = 'http://nominatim.openstreetmap.org/search?q=' + address + '&format=json';
+				var url = 'https://nominatim.openstreetmap.org/search?q=' + address + '&format=json';
 
 				$.get(url, function(response) {
 					if (typeof response[0] !== "undefined") {
