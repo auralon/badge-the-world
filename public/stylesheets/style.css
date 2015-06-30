@@ -393,6 +393,11 @@ aside.closed #toggleSidebar {
 	text-transform: uppercase;
 	margin: 0;
 }
+#content.twitter h4 span {
+	font-size: 1rem;
+	color: #2A7086;
+	text-transform: lowercase;
+}
 #twitterFeed {
 	margin: 0;
 	padding: 0;

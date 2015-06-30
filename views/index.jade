@@ -784,7 +784,7 @@ block scripts
 					var entries = response.responseData.feed.entries;
 					for (var i = 0; i < entries.length; i++) {
 						var date = entries[i].publishedDate.split(" ");
-						var entry = '<li class="twitterEntry"><h4>' + date[2] + ' ' + date[1] + '</h4>'+
+						var entry = '<li class="twitterEntry"><h4>' + date[2] + ' ' + date[1] + ' <span>@badgetheworld</span></h4>'+
 									entries[i].content + '</li>'
 						$('#twitterFeed').append(entry);
 					};
