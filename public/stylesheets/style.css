@@ -369,7 +369,7 @@ aside.closed #toggleSidebar {
 #addressContainer a {
 	position: absolute;
 	right: 4px;
-	top: 39px;
+	margin-top: 5px;
 	font-size: 1.5rem;
 }
 #addressContainer span p {
@@ -545,6 +545,7 @@ hr {
 }
 #fiveWays li:nth-of-type(odd) {
 	margin-right: 2%;
+	clear: both;
 }
 #fiveWays li input[type=checkbox], #fiveWays li input[type=radio] {
 	margin-right: 15px;
