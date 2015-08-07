@@ -879,6 +879,44 @@ span.spinner {
 }
 
 /*
+ KEY
+ */
+li.desktop {
+	background: white;
+	padding: 10px;
+	border-radius: 100px;
+	text-align: center;
+	width: 70px;
+	height: 70px;
+	cursor: default;
+}
+
+li.desktop img {
+	margin-top:  6px;
+}
+
+li.desktop img.push {
+	margin-top:  15px;
+}
+
+li.desktop a {
+	text-decoration: none;
+}
+
+li.desktop span {
+	display: block;
+	line-height: 13px;
+}
+
+.ferromenu-controller .label {
+	font-family: "ff-meta-web-pro",sans-serif;
+	font-weight: bold;
+	font-size: 15px;
+	text-transform: uppercase;
+	color: white;
+}
+
+/*
  <IE9 WARNING
  */
 #ie-warn {
