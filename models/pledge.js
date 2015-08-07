@@ -6,7 +6,7 @@ function sequenceGenerator(name){
     var SequenceSchema, Sequence;
 
     SequenceSchema = new mongoose.Schema({
-    nextSeqNumber: { type: Number, default: 500 }
+    nextSeqNumber: { type: Number, default: 600 }
     });
 
     Sequence = mongoose.model(name + 'Seq', SequenceSchema);
