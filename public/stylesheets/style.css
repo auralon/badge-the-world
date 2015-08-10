@@ -908,6 +908,15 @@ li.desktop span {
 	line-height: 13px;
 }
 
+.ferromenu-controller {
+	opacity: 0.2;
+	transition: opacity 300ms ease;
+}
+
+.ferromenu-controller.open, .ferromenu-controller:hover {
+	opacity: 1;
+}
+
 .ferromenu-controller .label {
 	font-family: "ff-meta-web-pro",sans-serif;
 	font-weight: bold;
@@ -915,6 +924,7 @@ li.desktop span {
 	text-transform: uppercase;
 	color: white;
 }
+
 
 /*
  <IE9 WARNING
