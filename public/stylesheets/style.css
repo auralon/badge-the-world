@@ -925,6 +925,10 @@ li.desktop span {
 	color: white;
 }
 
+#keyMobile {
+	display: none;
+}
+
 
 /*
  <IE9 WARNING
@@ -1047,6 +1051,73 @@ body.phone {
 
 .phone  #sidebarFooter span:nth-of-type(2) {
 	width: 65%;
+}
+
+.phone .ferromenu-controller {
+	display: none;
+}
+
+.phone #key {
+	display: none;
+}
+
+.phone #keyMobile {
+	display: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 1;
+	height: 100%;
+	width: 30px;
+	transition: width 300ms ease;
+}
+
+.phone #keyMobile.open {
+	width: 115px;
+}
+
+.phone #keyMobile > span {
+	height: 52px;
+	width: 1em;
+	font-size: 15px;
+	letter-spacing: 40px;
+	word-wrap: break-word;
+	text-align: center;
+	padding: 10px 0 10px 10px;
+	display: block;
+	position: relative;
+	background: white;
+	top: 50%;
+	margin-top: -45px;
+	border-radius: 4px 0 0 4px;
+	font-weight: bold;
+	color: grey;
+	line-height: 18px;
+}
+
+.phone #keyMobile ul {
+	position: absolute;
+	background: white;
+	left: 25px;
+	list-style: none;
+	padding: 0;
+	text-align: center;
+	top: 0;
+	margin: 0;
+	height: 100%;
+}
+
+.phone #keyMobile ul li {
+	padding: 8px;
+}
+
+.phone #keyMobile ul li img {
+	display: block;
+	margin: auto;
+}
+
+.phone #sidebarFooter > span > span {
+	margin-left: 0;
 }
 
 @media screen and (max-width: 768px) {

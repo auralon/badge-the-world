@@ -13,6 +13,7 @@ block stylesheets
 block content
 	#map
 		include ./includes/key.jade
+	include ./includes/key-mobile.jade
 	include ./includes/sidebar.jade
 	include ./includes/modal.jade
 	img#tooltip(src='/images/pledge-here-text.svg', style='width: 80px;')
@@ -25,6 +26,7 @@ block scripts
 	script(type='text/javascript', src='/javascripts/vendor/jquery.highlighttext.js')
 	script(type='text/javascript', src='/javascripts/vendor/jquery.growl.js')
 	script(type='text/javascript', src='/javascripts/vendor/jquery.ferro.ferroMenu-1.2.3.min.js')
+	script(type='text/javascript', src='/javascripts/vendor/hammer.min.js')
 	script.
 		$(document).ready(function() {
 
@@ -736,6 +738,7 @@ block scripts
 				if ($('#modalContainer').is(':visible')) {
 					$('#modalContainer').fadeOut(function() {
 						$(this).hide();
+						$('#keyMobile').fadeIn(350);
 					});
 				}
 			}
@@ -863,9 +866,9 @@ block scripts
 				}
 			}
 
-			/*=======*\
-			||  KEY  ||
-			\*=======*/
+			/*==================*\
+			||  KEY -- DESKTOP  ||
+			\*==================*/
 
 			$("#key").ferroMenu({
 				position 	: "right-center",
@@ -874,6 +877,24 @@ block scripts
 				radius		: 250,
 				margin		: 40,
 				opened		: false
+			});
+
+
+			/*=================*\
+			||  KEY -- MOBILE  ||
+			\*=================*/
+
+			Hammer(document.getElementById('keyMobile')).on('swipeleft', function(e) {
+				$('#keyMobile').addClass('open');
+			});
+			
+			Hammer(document.getElementById('keyMobile')).on('swiperight', function(e) {
+				$('#keyMobile').removeClass('open');
+			});
+
+			$('.phone #keyMobile > span').on('click', function(e) {
+				e.preventDefault();
+				$('#keyMobile').toggleClass('open');
 			});
 
 		});
