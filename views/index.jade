@@ -738,7 +738,7 @@ block scripts
 				if ($('#modalContainer').is(':visible')) {
 					$('#modalContainer').fadeOut(function() {
 						$(this).hide();
-						$('#keyMobile').fadeIn(350);
+						if (isMobile) $('#keyMobile').fadeIn(350);
 					});
 				}
 			}
