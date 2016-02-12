@@ -10,7 +10,7 @@ aside(class=("#{device}" == "phone" ? "closed" : undefined))
                 | theWorld
     ul#tabs
         li.active
-            a(href='#', data-content='pledge') Pledge
+            a(href='#', data-content='pledge') Share
         li
             a(href='#', data-content='about') About
         li
@@ -29,9 +29,13 @@ aside(class=("#{device}" == "phone" ? "closed" : undefined))
         span
             a.social(href='https://twitter.com/badgetheworld', title='twitter')
                 i.icon-twitter
+        span
             a.social(href='https://www.facebook.com/digitalme.projects', title='facebook')
                 i.icon-facebook
         span
+            span
+                a.affiliatesLink(href='http://www.erasmusprogramme.com/')
+                    img.affiliates(src='/images/erasmus.png', alt='Erasmus')
             span
                 a.affiliatesLink(href='http://openbadges.org/')
                     img.affiliates(src='/images/openbadges.png', alt='Mozilla Open Badges')

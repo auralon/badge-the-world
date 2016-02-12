@@ -2,14 +2,14 @@
     form#createPledge(action='/createPledge', method='post', accept-charset='utf-8')
         #stageOne.section
             p
-                | Pledge your support for Badge the World! Badge the World is the new social
-                | and technology movement to capture recognition for learning that happens
-                | anywhere.
+                | Badge the World is the new social and technology movement to capture 
+                | recognition for learning that happens anywhere, Share your Open Badge 
+                | work on the map and connect with others
             input(type='hidden', name='_csrf', value='#{csrfToken}')
             input(type='hidden', name='lat', value='')
             input(type='hidden', name='lon', value='')
             h2
-                | 5 ways to pledge to become a Badge partner:
+                | How are you planning to use badges?
                 span.sub *Required fields
             ul#fiveWays
                 li

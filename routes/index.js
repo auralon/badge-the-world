@@ -109,7 +109,7 @@ router.get('/getPledges', function(req, res) {
 
 	Pledge.find({},exclusions).sort({created_at: 'descending'}).exec(function(err,pledges){
 		if (err) return console.error(err);
-		res.setHeader('Content-Type', 'application/json');
+		res.setHeader('Content-Type', 'application/json; charset=utf-8');
 		return res.send(JSON.stringify(pledges));
 	});
 });
@@ -119,7 +119,7 @@ router.get('/getPledges', function(req, res) {
  */
 router.post('/contact', parseForm, csrfProtection, function(req, res) {
 	sendContactEmail(res, req.body, function(err, res) {
-		res.setHeader('Content-Type', 'application/json');
+		res.setHeader('Content-Type', 'application/json; charset=utf-8');
 		if (err) {
 			return res.send({'status':'error'});
 		}
