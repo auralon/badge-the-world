@@ -313,43 +313,43 @@ html
 															div(mc:edit='std_content00')
 																h1.h1 Someone has pledged to Badge the World!
 																strong 5 ways to pledge to become a Badge partner:
-																|  #{pledge.fiveWays} 
+																|  #{data.fiveWays} 
 																br
 																strong Tell us about your badging ideas:
-																|  #{pledge.idea} 
+																|  #{data.idea} 
 																br
 																strong How many people will your badging efforts impact?:
-																|  #{pledge.numberOfPeople} 
+																|  #{data.numberOfPeople} 
 																br
 																strong Location:
-																|  #{pledge.location} 
+																|  #{data.location} 
 																br
 																strong Zip/Postcode:
-																|  #{pledge.postcode} 
+																|  #{data.postcode} 
 																br
 																strong Email Address:
-																|  #{pledge.email} 
+																|  #{data.email} 
 																br
 																strong Name:
-																|  #{pledge.name} 
+																|  #{data.name} 
 																br
 																strong Twitter Handle:
-																|  #{pledge.twitterHandle} 
+																|  #{data.twitterHandle} 
 																br
 																strong Organisation:
-																|  #{pledge.organisation} 
+																|  #{data.organisation} 
 																br
 																strong Share:
-																|  #{pledge.share} 
+																|  #{data.share} 
 																br
 																strong Subscribed:
-																|  #{pledge.subscribe} 
+																|  #{data.subscribe} 
 																br
 																strong Date of pledge:
-																|  #{pledge.created_at} 
+																|  #{data.createdAt} 
 																br
-																strong Permalink:
-																a(href='http://www.badgetheworld.org/?pledge=#{pledge.uid} ') http://www.badgetheworld.org/?pledge=#{pledge.uid} 
+																strong Permalink: 
+																a(href='http://www.badgetheworld.org/?pledge=#{data.id} ') http://www.badgetheworld.org/?pledge=#{data.id} 
 																br
 												// // End Module: Standard Content \\
 									// // End Template Body \\

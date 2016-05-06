@@ -147,9 +147,9 @@ block scripts
 
 				for (var i = 0; i < data.length; i++) {
 
-					var pledgeDate = new Date(data[i].created_at);
+					var pledgeDate = new Date(data[i].createdAt);
 
-					//- calculate timeframe based on created_at property
+					//- calculate timeframe based on createdAt property
 					data[i].timeframe = {
 						today: ((now.getDate() == pledgeDate.getDate()) && (now.getMonth() == pledgeDate.getMonth()) && (now.getFullYear() == pledgeDate.getFullYear())),
 						month: ((now.getMonth() == pledgeDate.getMonth()) && (now.getFullYear() == pledgeDate.getFullYear())),
@@ -162,7 +162,8 @@ block scripts
 			
 			function addLocation(entry, open) {
 
-				if (entry.lat !== "" && entry.lon !== "") {
+
+				if (entry.lat !== null && entry.lon !== null) {
 
 					var description = '<pre>' + entry.idea.replace(/(?:\\[rn])+/g, "\r\n\r\n") + '</pre>';
 
@@ -170,8 +171,8 @@ block scripts
 						description += '<b>Number of people impacted:</b> ' + entry.numberOfPeople + '<br>';
 					}
 
-					if (entry.created_at) {
-						var date = new Date(entry.created_at);
+					if (entry.createdAt) {
+						var date = new Date(entry.createdAt);
 						description += '<b>Date of pledge:</b> ' + date.toDateString() + '<br>';
 					}
 
@@ -183,8 +184,8 @@ block scripts
 						description += '<b>Twitter Username:</b> <a href="https://twitter.com/' + entry.twitterHandle + '">@' + entry.twitterHandle + '</a><br>';
 					}
 
-					description += '<div class="links"><a href="http://#{siteUrl}/?pledge=' + entry.uid + '"><i class="icon-link"></i>permalink</a> ' +
-								   '<a href="https://twitter.com/intent/tweet?text=Check out this pledge!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=' + entry.uid + '" id="twitter-share"><i class="icon-twitter"></i>share on twitter</a></div>';
+					description += '<div class="links"><a href="http://#{siteUrl}/?pledge=' + entry.id + '"><i class="icon-link"></i>permalink</a> ' +
+								   '<a href="https://twitter.com/intent/tweet?text=Check out this pledge!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=' + entry.id + '" id="twitter-share"><i class="icon-twitter"></i>share on twitter</a></div>';
 
 					var marker = L.marker(
 						[ entry.lat, entry.lon ],
@@ -211,11 +212,11 @@ block scripts
 					marker.topic = entry.topic;
 					marker.timeframe = entry.timeframe;
 					marker.country = entry.country;
-					marker.uid = entry.uid;
+					marker.id = entry.id;
 					map.addLayer(marker);
 					markers.push(marker);
 
-					if (entry.uid == pledge) {
+					if (entry.id == pledge) {
 						map.setView([entry.lat, entry.lon], 6);
 						marker.openPopup();
 					}
@@ -589,7 +590,7 @@ block scripts
 						$('#stageFour').fadeIn(function() {
 							$('#pledge').mCustomScrollbar('scrollTo','bottom');
 
-							var twitterShareUrl = "https://twitter.com/intent/tweet?text=I pledged to badge the world!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=" + response.pledge.uid;
+							var twitterShareUrl = "https://twitter.com/intent/tweet?text=I pledged to badge the world!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=" + response.pledge.id;
 							$('#twitterShare').attr('href', twitterShareUrl);
 						});
 
@@ -746,8 +747,8 @@ block scripts
 						node += '<li><span>Number of people impacted:</span> ' + results[i].numberOfPeople + '</li>';
 					}
 
-					if (results[i].created_at) {
-						var date = new Date(results[i].created_at);
+					if (results[i].createdAt) {
+						var date = new Date(results[i].createdAt);
 						node += '<li><span>Date of pledge:</span> ' + date.toDateString() + '</li>';
 					}
 
@@ -759,7 +760,7 @@ block scripts
 
 					$node.highlightText(term,"highlight",false);
 
-					$node.append('<a class="viewPledge" data-uid="' + results[i].uid + '" href="/?pledge=' + results[i].uid + '">View <img src="/images/view.png"></a></li>');
+					$node.append('<a class="viewPledge" data-id="' + results[i].id + '" href="/?pledge=' + results[i].id + '">View <img src="/images/view.png"></a></li>');
 
 					$resultsMarkup.append($node);
 				};
@@ -778,12 +779,12 @@ block scripts
 
 			$(document).delegate('.viewPledge', 'click', function(e) {
 				e.preventDefault();
-				var uid = $(this).data('uid');
+				var id = $(this).data('id');
 
 				if (isMobile) $('#toggleSidebar').trigger('click');
 
 				$.each(markers, function(i, marker) {
-					if (marker.uid == uid) {
+					if (marker.id == id) {
 						map.setView([marker.getLatLng().lat, marker.getLatLng().lng], 6);
 						marker.openPopup();
 

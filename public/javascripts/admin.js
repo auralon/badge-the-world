@@ -14,8 +14,8 @@ $(document).ready(function() {
 					+ '<td>' + data[i].name + '</td>'
 					+ '<td>' + data[i].twitterHandle + '</td>'
 					+ '<td>' + data[i].organisation + '</td>'
-					+ '<td>' + new Date(data[i].created_at).toISOString().substr(0, 19).replace('T', ' ') + '</td>'
-					+ '<td><a href="/update?pledge=' + data[i].uid + '">Edit</a>&nbsp;<a href="#" data-id="' + data[i].uid + '" class="delete">Delete</a>'
+					+ '<td>' + new Date(data[i].createdAt).toISOString().substr(0, 19).replace('T', ' ') + '</td>'
+					+ '<td><a href="/update?pledge=' + data[i].id + '">Edit</a>&nbsp;<a href="#" data-id="' + data[i].id + '" class="delete">Delete</a>'
 					+ '</tr>'
 
 			$('table').append($(row));

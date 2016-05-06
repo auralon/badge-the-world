@@ -10,7 +10,7 @@ block admin-content
 		span.required *Required
 	form(action='/updatePledge', id='updatePledge', method='post', accept-charset='utf-8')
 		input(type='hidden', name='_csrf', value='#{ csrfToken }')
-		input(type='hidden', name='id', value='#{ pledge.uid }')
+		input(type='hidden', name='id', value='#{ pledge.id }')
 		input(type='hidden', name='lat', value='#{ pledge.lat }')
 		input(type='hidden', name='lon', value='#{ pledge.lon }')
 		h2 5 ways to pledge to become a Badge partner:

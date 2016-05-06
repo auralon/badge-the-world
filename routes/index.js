@@ -15,8 +15,9 @@ var express = require('express');
 var querystring = require('querystring');
 var mailer = require('express-mailer');
 var passport = require('passport');
+var passportLocalSequelize = require('passport-local-sequelize');
 var Pledge = require('../models/pledge');
-var Account = require('../models/account');
+var User = require('../models/user');
 var router = express.Router();
 
 /*
@@ -24,7 +25,6 @@ var router = express.Router();
  */
 var csrfProtection = csrf({ cookie: true });
 var parseForm = bodyParser.urlencoded({ extended: false });
-
 
 var app = express();
 
@@ -53,25 +53,11 @@ mailer.extend(app, {
 	}
 });
 
-var sendPledgeEmail = function(res, pledge, callback) {
-	var notificationAddresses = (process.env.PLEDGE_NOTIFICATION_ADDRESSES !== undefined) ? process.env.PLEDGE_NOTIFICATION_ADDRESSES : 'example@gmail.com';
-	app.mailer.send('emails/pledge', {
-		to: notificationAddresses, // REQUIRED. This can be a comma delimited string just like a normal email to field.
-		subject: 'New Pledge!', // REQUIRED.
-		pledge: pledge,
-	}, function (err) {
-		if (callback && typeof(callback) == "function") {
-			callback(err, res);
-		}
-	});
-}
-
-var sendContactEmail = function(res, post, callback) {
-	var notificationAddresses = (process.env.CONTACT_NOTIFICATION_ADDRESSES !== undefined) ? process.env.CONTACT_NOTIFICATION_ADDRESSES : 'example@gmail.com';
-	app.mailer.send('emails/contact', {
-		to: notificationAddresses, // This can be a comma delimited string just like a normal email to field.
-		subject: 'New Badge the World contact submission',
-		post: post,
+var sendEmail = function(res, data, callback) {
+	app.mailer.send(data.template, {
+		to: data.notificationAddresses, // REQUIRED. This can be a comma delimited string just like a normal email to field.
+		subject: data.subject, // REQUIRED.
+		data: data,
 	}, function (err) {
 		if (callback && typeof(callback) == "function") {
 			callback(err, res);
@@ -110,16 +96,21 @@ router.get('/', [csrfProtection, recaptcha.middleware.render], function (req, re
  RETRIEVE PLEDGES (AJAX)
  */
 router.get('/getPledges', function(req, res) {
-	if (req.user) {
-		exclusions = {_id: 0, subscribe: 0, __v: 0};
-	} else {
-		exclusions = {_id: 0, subscribe: 0, email: 0, __v: 0};
+
+	var exclusions = ['subscribe'];
+
+	if (!req.user) {
+		exclusions.push('email');
 	}
 
-	Pledge.find({},exclusions).sort({created_at: 'descending'}).exec(function(err,pledges){
-		if (err) return console.error(err);
-		res.setHeader('Content-Type', 'application/json; charset=utf-8');
-		return res.send(JSON.stringify(pledges));
+	Pledge.findAll({
+		attributes: { exclude: exclusions },
+		order: '"createdAt" DESC'
+	}).then(function(pledges) {
+		if (pledges !== undefined) {
+			res.setHeader('Content-Type', 'application/json; charset=utf-8');
+			return res.send(JSON.stringify(pledges));
+		}
 	});
 });
 
@@ -127,7 +118,13 @@ router.get('/getPledges', function(req, res) {
  CONTACT FORM SUBMISSION
  */
 router.post('/contact', parseForm, csrfProtection, function(req, res) {
-	sendContactEmail(res, req.body, function(err, res) {
+
+	var data = req.body;
+	data.template = 'emails/contact';
+	data.notificationAddresses = (process.env.CONTACT_NOTIFICATION_ADDRESSES !== undefined) ? process.env.CONTACT_NOTIFICATION_ADDRESSES : 'example@gmail.com';
+	data.subject = 'New Badge the World contact submission';
+
+	sendEmail(res, data, function(err, res) {
 		res.setHeader('Content-Type', 'application/json; charset=utf-8');
 		if (err) {
 			return res.send({'status':'error'});
@@ -150,7 +147,7 @@ router.post('/createPledge', [csrfProtection, recaptcha.middleware.verify], func
 	if (req.body.researchBadge) fiveWays.push("Research Badges");
 	if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
 
-	var pledge = new Pledge({
+	Pledge.build({
 		fiveWays: fiveWays.join(", "),
 		idea : (req.body.idea ? req.body.idea : ""),
 		topic : req.body.topic,
@@ -164,21 +161,24 @@ router.post('/createPledge', [csrfProtection, recaptcha.middleware.verify], func
 		name : (req.body.name ? req.body.name : ""),
 		twitterHandle : (req.body.twitterHandle ? req.body.twitterHandle : ""),
 		organisation : (req.body.organisation ? req.body.organisation : ""),
-		subscribe : (!req.body.subscribe ? "Y" : "N"),
-		created_at : Date.now()
-	}).save( function( err, pledge, count ){
-		if (err) {
+		subscribe : !req.body.subscribe,
+	})
+	.save()
+	.then(function(pledge) {
+		pledge.template = 'emails/pledge';
+		pledge.notificationAddresses = (process.env.PLEDGE_NOTIFICATION_ADDRESSES !== undefined) ? process.env.PLEDGE_NOTIFICATION_ADDRESSES : 'example@gmail.com';
+		pledge.subject = 'New Pledge!';
+
+		sendEmail(res, pledge, function(err, res) {
 			res.setHeader('Content-Type', 'application/json');
-			return res.send({'status':'error'});
-		} else {
-			sendPledgeEmail(res, pledge, function(err, res) {
-				res.setHeader('Content-Type', 'application/json');
-				if (err) {
-					console.log(err);
-				}
-				return res.send({'status':'success', 'pledge': pledge});
-			});
-		}
+			if (err) {
+				return res.send({'status':'error'});
+			}
+			return res.send({'status':'success', 'pledge': pledge});
+		});
+	}).catch(function(err) {
+		res.setHeader('Content-Type', 'application/json');
+		return res.send({'status':'error'});
 	});
 
 }
@@ -192,17 +192,20 @@ router.get('/update', csrfProtection, function(req, res) {
 	var str = req.url.split('?')[1];
 	var qs = querystring.parse(str);
 
-	if (req.user) {
-		var pledge = Pledge.findOne({ uid: qs.pledge}, function (err, doc){
+	Pledge.findById(qs.pledge)
+	.then(function(pledge) {
+		if ((pledge !== undefined) && req.user) {
 			res.render('update', {
 				user: req.user,
-				pledge : doc,
+				pledge : pledge,
 				csrfToken: req.csrfToken()
 			});
-		});
-	} else {
-		res.send('This page does not exist', 404);
-	}
+		} else {
+			res.send('This page does not exist', 404);
+			return;
+		}
+	});
+
 });
 
 /*
@@ -211,37 +214,39 @@ router.get('/update', csrfProtection, function(req, res) {
 router.post('/updatePledge', csrfProtection, function(req, res) {
 	if (req.user) {
 
-		console.log(req.body)
+		Pledge.findById(req.body.id)
+		.then(function(pledge) {
+			if (pledge !== undefined) {
 
-		var pledge = Pledge.findOne({ uid: req.body.id}, function (err, doc){
+				var fiveWays = [];
+				if (req.body.createBadge) fiveWays.push("Create or Design Badges");
+				if (req.body.issueBadge) fiveWays.push("Issue Badges");
+				if (req.body.displayBadge) fiveWays.push("Display Badges");
+				if (req.body.researchBadge) fiveWays.push("Research Badges");
+				if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
 
-			if (err) {
-				console.log(err);
-				res.send('There was an error updating the pledge');
+				pledge.update({
+					"fiveWays": fiveWays.join(", "),
+					"idea": (req.body.idea ? req.body.idea : ""),
+					"topic": req.body.topic,
+					"numberOfPeople": (req.body.numberOfPeople ? req.body.numberOfPeople : ""),
+					"location": (req.body.address ? req.body.address : ""),
+					"lat": (req.body.lat ? req.body.lat : ""),
+					"lon": (req.body.lon ? req.body.lon : ""),
+					"email": (req.body.email ? req.body.email : ""),
+					"name": (req.body.name ? req.body.name : ""),
+					"twitterHandle": (req.body.twitterHandle ? req.body.twitterHandle : ""),
+					"organisation": (req.body.organisation ? req.body.organisation : ""),
+					"subscribe": !req.body.subscribe,
+				}).then(function() {
+					res.redirect('/admin');
+				}).catch(function(err) {
+					res.send('There was a problem updating the pledge');
+				});
+			} else {
+				res.send('There was an error finding the pledge');
 				return;
 			}
-
-			var fiveWays = [];
-			if (req.body.createBadge) fiveWays.push("Create or Design Badges");
-			if (req.body.issueBadge) fiveWays.push("Issue Badges");
-			if (req.body.displayBadge) fiveWays.push("Display Badges");
-			if (req.body.researchBadge) fiveWays.push("Research Badges");
-			if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
-
-			doc.fiveWays = fiveWays.join(", ");
-			doc.idea = (req.body.idea ? req.body.idea : "");
-			doc.topic = req.body.topic;
-			doc.numberOfPeople = (req.body.numberOfPeople ? req.body.numberOfPeople : "");
-			doc.location = (req.body.address ? req.body.address : "");
-			doc.lat = (req.body.lat ? req.body.lat : "");
-			doc.lon = (req.body.lon ? req.body.lon : "");
-			doc.email = (req.body.email ? req.body.email : "");
-			doc.name = (req.body.name ? req.body.name : "");
-			doc.twitterHandle = (req.body.twitterHandle ? req.body.twitterHandle : "");
-			doc.organisation = (req.body.organisation ? req.body.organisation : "");
-			doc.subscribe = (!req.body.subscribe ? "Y" : "N");
-			doc.save();
-			res.redirect('/admin');
 		});
 	}
 });
@@ -251,19 +256,15 @@ router.post('/updatePledge', csrfProtection, function(req, res) {
  */
 router.post('/deletePledge', csrfProtection, function(req, res) {
 	if (req.user) {
-
-		var pledge = Pledge.findOne({ uid: req.body.id}, function (err, doc){
-
-			if (err) {
-				console.log(err);
+		Pledge.findById(req.body.id)
+		.then(function(pledge) {
+			if ((pledge !== undefined) && pledge.destroy()) {
+				res.setHeader('Content-Type', 'application/json');
+				res.end(JSON.stringify({ status: "ok" }));
+			} else {
 				res.send('There was an error deleting the pledge');
 				return;
 			}
-
-			doc.remove();
-
-			res.setHeader('Content-Type', 'application/json');
-			res.end(JSON.stringify({ status: "ok" }));
 		});
 	}
 });
@@ -275,17 +276,16 @@ router.post('/deletePledge', csrfProtection, function(req, res) {
 // 	res.render('register', { });
 // });
 
-// /*
-//  REGISTER USER SUBMISSION
-//  */
+/*
+ REGISTER USER SUBMISSION
+ */
 // router.post('/register', function(req, res) {
-// 	Account.register(new Account({ username : req.body.username }), req.body.password, function(err, account) {
+// 	User.register(req.body.username, req.body.password, function(err) {
 // 		if (err) {
 // 			return res.render('register', { account : account });
 // 		}
-
 // 		passport.authenticate('local')(req, res, function () {
-// 			res.redirect('/');
+// 			res.redirect('/admin');
 // 		});
 // 	});
 // });
@@ -316,46 +316,52 @@ router.get('/logout', function(req, res) {
  DOWNLOAD PLEDGES AS CSV (ADMIN ONLY)
  */
 router.get('/download', function(req, res) {
-	Pledge.find({},{_id: 0, subscribe: 0, __v: 0},function(error,data){
 
-		if (error) return next(err);
+	Pledge.findAll({}).then(function(pledges) {
+		if (pledges !== undefined) {
 
-		var csvData = [];
+			var csvData = [];
 
-		var headers = {
-			fiveWays: '5 ways to pledge to become a Badge partner',
-			idea: 'Tell us about your badging ideas',
-			topic: 'Topic',
-			numberOfPeople: 'How many people will your badging efforts impact?',
-			location: 'Location',
-			email: 'Email Address',
-			name: 'Name',
-			twitterHandle: 'Twitter Username',
-			organisation: 'Organisation',
-			created_at: "Date of pledge",
+			var headers = {
+				fiveWays: '5 ways to pledge to become a Badge partner',
+				idea: 'Tell us about your badging ideas',
+				topic: 'Topic',
+				numberOfPeople: 'How many people will your badging efforts impact?',
+				location: 'Location',
+				email: 'Email Address',
+				name: 'Name',
+				twitterHandle: 'Twitter Username',
+				organisation: 'Organisation',
+				createdAt: "Date of pledge",
+			}
+
+			for (var i = pledges.length - 1; i >= 0; i--) {
+				var date = new Date(pledges[i].createdAt);
+				date = date.toISOString().substr(0, 19).replace('T', ' ');
+				csvData.push({
+					fiveWays: pledges[i].fiveWays,
+					idea: pledges[i].idea,
+					topic: pledges[i].topic,
+					numberOfPeople: pledges[i].numberOfPeople,
+					location: pledges[i].location,
+					email: pledges[i].email,
+					name: pledges[i].name,
+					twitterHandle: pledges[i].twitterHandle,
+					organisation: pledges[i].organisation,
+					createdAt: date
+				});
+			};
+			csvData.unshift(headers);
+			var d = new Date();
+			res.attachment('pledges-' + d.toISOString().replace('T','_').replace(/\:/g,'').split('.')[0] + '.csv');
+			res.csv(csvData);
+
+		} else {
+			res.send('There was an error downloading the pledges');
+			return;
 		}
-
-		for (var i = data.length - 1; i >= 0; i--) {
-			var date = new Date(data[i].created_at);
-			date = date.toISOString().substr(0, 19).replace('T', ' ');
-			csvData.push({
-				fiveWays: data[i].fiveWays,
-				idea: data[i].idea,
-				topic: data[i].topic,
-				numberOfPeople: data[i].numberOfPeople,
-				location: data[i].location,
-				email: data[i].email,
-				name: data[i].name,
-				twitterHandle: data[i].twitterHandle,
-				organisation: data[i].organisation,
-				created_at: date
-			});
-		};
-		csvData.unshift(headers);
-		var d = new Date();
-		res.attachment('pledges-' + d.toISOString().replace('T','_').replace(/\:/g,'').split('.')[0] + '.csv');
-		res.csv(csvData);
 	});
+
 });
 
 module.exports = router;

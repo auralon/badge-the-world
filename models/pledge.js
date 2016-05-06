@@ -1,67 +1,25 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+var db = require('../db.js');
 
-// Create a sequence
-function sequenceGenerator(name){
-    var SequenceSchema, Sequence;
-
-    SequenceSchema = new mongoose.Schema({
-    nextSeqNumber: { type: Number, default: 600 }
-    });
-
-    Sequence = mongoose.model(name + 'Seq', SequenceSchema);
-
-    return {
-    next: function(callback){
-        Sequence.find(function(err, data){
-        if(err){ throw(err); }
-
-        if(data.length < 1){
-            // create if doesn't exist create and return first
-            Sequence.create({}, function(err, seq){
-            if(err) { throw(err); }
-            callback(seq.nextSeqNumber);
-            });
-        } else {
-            // update sequence and return next
-            Sequence.findByIdAndUpdate(data[0]._id, { $inc: { nextSeqNumber: 1 } }, function(err, seq){
-            if(err) { throw(err); }
-            callback(seq.nextSeqNumber);
-            });
-        }
-        });
-    }
-    };
-}
-
-var sequence = sequenceGenerator('pledge');
-
-var Pledge = new Schema({
-    uid             : Number,
-    fiveWays        : String,
-    idea            : String,
-    topic           : String,
-    numberOfPeople  : String,
-    location        : String,
-    country         : String,
-    continent       : String,
-    lat             : String,
-    lon             : String,
-    email           : String,
-    name            : String,
-    twitterHandle   : String,
-    organisation    : String,
-    subscribe       : String,
-    created_at      : Date
+var Pledge = db.sequelize.define('pledge', {
+    "id": {
+        type: db.Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },
+    "fiveWays"        : db.Sequelize.TEXT,
+    "idea"            : db.Sequelize.TEXT,
+    "topic"           : db.Sequelize.TEXT,
+    "numberOfPeople"  : db.Sequelize.TEXT,
+    "location"        : db.Sequelize.TEXT,
+    "country"         : db.Sequelize.TEXT,
+    "continent"       : db.Sequelize.TEXT,
+    "lat"             : db.Sequelize.TEXT,
+    "lon"             : db.Sequelize.TEXT,
+    "email"           : db.Sequelize.TEXT,
+    "name"            : db.Sequelize.TEXT,
+    "twitterHandle"   : db.Sequelize.TEXT,
+    "organisation"    : db.Sequelize.TEXT,
+    "subscribe"       : db.Sequelize.TEXT,
 });
 
-Pledge.pre('save', function(next){
-    var doc = this;
-    // get the next sequence
-    sequence.next(function(nextSeq){
-    doc.uid = nextSeq;
-    next();
-    });
-});
-
-module.exports = mongoose.model('Pledge', Pledge);
+module.exports = Pledge;
