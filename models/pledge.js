@@ -44,6 +44,7 @@ var Pledge = new Schema({
     numberOfPeople  : String,
     location        : String,
     country         : String,
+    continent       : String,
     lat             : String,
     lon             : String,
     email           : String,
