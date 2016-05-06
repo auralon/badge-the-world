@@ -1,3 +1,11 @@
+var recaptcha = require('express-recaptcha');
+recaptcha.init('6LcMEB8TAAAAALlOi4EXlarogAC73o1toWYkIOuK',
+							 '6LcMEB8TAAAAAJxKqlObmsMcR9dqCzVcWfnmJGyZ',
+							 {
+								 callback: 'successfullySubmitted',
+								 fallback: true
+							 });
+
 var csrf = require('csurf');
 var csv = require('express-csv');
 var cookieParser = require('cookie-parser');
@@ -77,14 +85,14 @@ app.use(cookieParser());
 /*
  HOME PAGE
  */
-router.get('/', csrfProtection, function (req, res) {
+router.get('/', [csrfProtection, recaptcha.middleware.render], function (req, res) {
 
 	var str = req.url.split('?')[1];
 	var qs = querystring.parse(str);
 
 	var showModal = (typeof qs.pledge === "undefined") ? true : false;
 
-	res.render('index', 
+	res.render('index',
 		{
 			title: "Badge the World",
 			pledge : qs.pledge,
@@ -92,7 +100,8 @@ router.get('/', csrfProtection, function (req, res) {
 			user : req.user,
 			csrfToken: req.csrfToken(),
 			device: req.device,
-			siteUrl: req.headers.host
+			siteUrl: req.headers.host,
+			captcha:req.recaptcha
 		}
 	);
 });
@@ -130,7 +139,9 @@ router.post('/contact', parseForm, csrfProtection, function(req, res) {
 /*
  PLEDGE SUBMISSION
  */
-router.post('/createPledge', csrfProtection, function(req, res) {
+router.post('/createPledge', [csrfProtection, recaptcha.middleware.verify], function(req, res) {
+
+	if (!req.recaptcha.error){
 
 	var fiveWays = [];
 	if (req.body.createBadge) fiveWays.push("Create or Design Badges");
@@ -146,6 +157,7 @@ router.post('/createPledge', csrfProtection, function(req, res) {
 		numberOfPeople : (req.body.numberOfPeople ? req.body.numberOfPeople : ""),
 		location : (req.body.address ? req.body.address : ""),
 		country : req.body.country,
+		continent: req.body.continent,
 		lat: (req.body.lat ? req.body.lat : ""),
 		lon: (req.body.lon ? req.body.lon : ""),
 		email : (req.body.email ? req.body.email : ""),
@@ -168,6 +180,8 @@ router.post('/createPledge', csrfProtection, function(req, res) {
 			});
 		}
 	});
+
+}
 
 });
 

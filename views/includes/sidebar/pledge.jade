@@ -57,6 +57,7 @@
                     a(href='#')
                         i.icon-target
                 input#address(type='text', name='address', value='', dir='auto', aria-label='Location: Where will this happen? ', placeholder='Where will this happen?', aria-required='true', title='', required='')
+                input#continent(type='text', name="continent", style="display: none;")
             a#continue1.button Continue
         #stageTwo.section(style='display: none')
             p.country
@@ -338,12 +339,17 @@
             p
                 input#subscribe(type='checkbox', name='subscribe', value='Subscribe', role='checkbox')
                 | I don't want to receive updates from Badge The World
+            !{captcha}
+            script(type='text/javascript').
+                function successfullySubmitted(){
+                    $('#pledgeSubmit').removeAttr('disabled').fadeTo('opacity', '1');
+                }
             p
                 input#pledgeSubmitHidden(type='submit', style='display:none')
-                button#pledgeSubmit
+                button#pledgeSubmit(disabled = "true" style='opacity: 0.3')
                     span.text Submit
                     span.spinner
-                        i.demo-icon.icon-spin1.animate-spin
+                      i.demo-icon.icon-spin1.animate-spin
         #stageFour.section(style='display: none')
             h2.centerText Thank you for your pledge!
             p.centerText Now share your pledge with the world...
