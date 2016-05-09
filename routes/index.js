@@ -1,24 +1,27 @@
-var recaptcha = require('express-recaptcha');
-recaptcha.init('6LcMEB8TAAAAALlOi4EXlarogAC73o1toWYkIOuK',
-							 '6LcMEB8TAAAAAJxKqlObmsMcR9dqCzVcWfnmJGyZ',
-							 {
-								 callback: 'successfullySubmitted',
-								 fallback: true
-							 });
+var csrf = require('csurf'),
+	csv = require('express-csv'),
+	cookieParser = require('cookie-parser'),
+	responsive = require('express-responsive'),
+	bodyParser = require('body-parser'),
+	express = require('express'),
+	querystring = require('querystring'),
+	mailer = require('express-mailer'),
+	passport = require('passport'),
+	passportLocalSequelize = require('passport-local-sequelize'),
+	Pledge = require('../models/pledge'),
+	User = require('../models/user'),
+	router = express.Router(),
+	recaptcha = require('express-recaptcha'),
+	recaptchaSiteKey = ((process.env.RECAPTCHA_SITE_KEY !== undefined) ? process.env.RECAPTCHA_SITE_KEY : 'your_recaptcha_site_key_here'),
+	recaptchaSecretKey = ((process.env.RECAPTCHA_SECRET_KEY !== undefined) ? process.env.RECAPTCHA_SECRET_KEY : 'your_recaptcha_secret_key_here');
 
-var csrf = require('csurf');
-var csv = require('express-csv');
-var cookieParser = require('cookie-parser');
-var responsive = require('express-responsive');
-var bodyParser = require('body-parser');
-var express = require('express');
-var querystring = require('querystring');
-var mailer = require('express-mailer');
-var passport = require('passport');
-var passportLocalSequelize = require('passport-local-sequelize');
-var Pledge = require('../models/pledge');
-var User = require('../models/user');
-var router = express.Router();
+/*
+ INIT REPATCHA
+ */
+recaptcha.init(recaptchaSiteKey, recaptchaSecretKey, {
+	callback: 'successfullySubmitted',
+	fallback: true
+});
 
 /*
  SETUP ROUTE MIDDLEWARES
@@ -127,6 +130,7 @@ router.post('/contact', parseForm, csrfProtection, function(req, res) {
 	sendEmail(res, data, function(err, res) {
 		res.setHeader('Content-Type', 'application/json; charset=utf-8');
 		if (err) {
+			console.log(err);
 			return res.send({'status':'error'});
 		}
 		return res.send({'status':'success'});
@@ -172,12 +176,14 @@ router.post('/createPledge', [csrfProtection, recaptcha.middleware.verify], func
 		sendEmail(res, pledge, function(err, res) {
 			res.setHeader('Content-Type', 'application/json');
 			if (err) {
+				console.log(err);
 				return res.send({'status':'error'});
 			}
 			return res.send({'status':'success', 'pledge': pledge});
 		});
 	}).catch(function(err) {
 		res.setHeader('Content-Type', 'application/json');
+		console.log(err);
 		return res.send({'status':'error'});
 	});
 
