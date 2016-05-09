@@ -6,17 +6,17 @@
 
 ###### 1. GET THE CODE
 
-`git clone https://github.com/auralon/badge-the-world.git`
+    git clone https://github.com/auralon/badge-the-world.git
 
 
 ###### 2. CHANGE WORKING DIRECTORY
 
-`cd badge-the-world`
+    cd badge-the-world
 
 
 ###### 3. INSTALL DEPENDENCIES
 
-`npm install`
+    npm install
 
 
 ###### 4. CONFIGURE SESSION SECRET
@@ -68,7 +68,7 @@ You will also need to setup your tables, so run the following postgres statement
 Open `routes/index.js` and replace '**your_recaptcha_site_key_here**' and '**your_recaptcha_secret_key_here**' with your actual keys provided by Google.
 
 
-Then, alter your smtp mail credentials (replace "**exampled@gmail.com**" and "**password**" in the section of code that is shown below):
+Then, alter your smtp mail credentials (replace "**example@gmail.com**" and "**password**" in the section of code that is shown below):
 
     mailer.extend(app, {
     	from: 'no-reply@badgetheworld.org',
@@ -88,6 +88,13 @@ Finally, look for the 2 lines that contain "process.env.CONTACT_NOTIFICATION_ADD
 
 ###### 7. RUN THE SERVER
 
-`node bin/www`
+    node bin/www
 
 
+---
+
+### Additional Notes
+
+If you've imported pledges into a previously empty database, be sure to update the serial sequence, otherwise you will get new pledges with conflicting ids.  To do this, run the following statement:
+
+    SELECT pg_catalog.setval(pg_get_serial_sequence('pledges', 'id'), (SELECT MAX(id) FROM pledges)+1);
