@@ -4,27 +4,27 @@
 
 ### Setup Guide
 
-###### Get the code
+###### 1. GET THE CODE
 
 `git clone https://github.com/auralon/badge-the-world.git`
 
 
-###### Change working directory
+###### 2. CHANGE WORKING DIRECTORY
 
 `cd badge-the-world`
 
 
-###### Install dependencies
+###### 3. INSTALL DEPENDENCIES
 
 `npm install`
 
 
-###### Configure session secret
+###### 4. CONFIGURE SESSION SECRET
 
 Open `app.js` and change '**keyboard cat strikes again**' to something unique and strong
 
 
-###### Configure postgres database
+###### 5. CONFIGURE POSTGRES DATABASE
 
 Open `db.js` and change the postgres connection url, which is currently set at '**postgres://postgres:password@localhost:5432/postgres**'
 
@@ -63,7 +63,7 @@ You will also need to setup your tables, so run the following postgres statement
     );
 
 
-###### Configure recaptcha and mailer
+###### 6. CONFIGURE RECAPTCHA AND MAILER
 
 Open `routes/index.js` and replace '**your_recaptcha_site_key_here**' and '**your_recaptcha_secret_key_here**' with your actual keys provided by Google.
 
@@ -86,7 +86,7 @@ Then, alter your smtp mail credentials (replace "**exampled@gmail.com**" and "**
 Finally, look for the 2 lines that contain "process.env.CONTACT_NOTIFICATION_ADDRESSES" and "process.env.PLEDGE_NOTIFICATION_ADDRESSES" and replace the string "example@gmail.com" with the relevant email addresses for that notification.
 
 
-###### Run the server
+###### 7. RUN THE SERVER
 
 `node bin/www`
 
