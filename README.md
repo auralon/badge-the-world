@@ -41,13 +41,14 @@ Copy `.env.example` to `.env` and adjust the variables accordingly.
 You will also need to setup your tables, so run the following postgres statements to create the required tables:
 
     CREATE TABLE pledges (
-    	"id"            serial,
+    	"id"             serial,
     	"fiveWays"       text,
     	"idea"           text,
     	"topic"          text,
     	"numberOfPeople" text,
     	"location"       text,
     	"country"        text,
+        "continent"      varchar(30),
     	"lat"            varchar(20),
     	"lon"            varchar(20),
     	"email"          varchar(255),
