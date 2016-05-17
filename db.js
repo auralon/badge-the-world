@@ -1,7 +1,7 @@
 var pg = require('pg'),
 	hstore = require('pg-hstore')(),
 	Sequelize = require('sequelize'),
-	rdb = (process.env.DATABASE_URL !== undefined) ? process.env.DATABASE_URL : 'postgres://postgres:password@localhost:5432/postgres',
+	rdb = (process.env.DATABASE_URL !== undefined) ? process.env.DATABASE_URL : 'postgres://user:password@localhost:5432/database',
 	match = rdb.match(/postgres:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/(.+)/)
 	sequelize = new Sequelize(match[5], match[1], match[2], {
 		dialect:  'postgres',

@@ -19,17 +19,26 @@
     npm install
 
 
-###### 4. CONFIGURE SESSION SECRET
+###### 4. CONFIGURE ENVIRONMENT
 
-Open `app.js` and change '**keyboard cat strikes again**' to something unique and strong
+Copy `.env.example` to `.env` and adjust the variables accordingly.
+
+| ENV VAR                        | ACTION                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| PORT                           | This can most likely remain unchanged, unless another service is using port 3000 (eg: ntop) |
+| SESSION_SECRET                 | Change this to something unique and strong                                                  |
+| DATABASE_URL                   | Change this to your postgres connection url                                                 |
+| RECAPTCHA_SITE_KEY             | Change this to the key provided to you by Google                                            |
+| RECAPTCHA_SECRET_KEY           | Change this to the key provided to you by Google                                            |
+| SMTP_USER                      | Change this to your SMTP mail username                                                      |
+| SMTP_PASSWD                    | Change this to your SMTP mail password                                                      |
+| CONTACT_NOTIFICATION_ADDRESSES | Change this to the relevant email address(es) (comma-separated) for this notification       |
+| PLEDGE_NOTIFICATION_ADDRESSES  | Change this to the relevant email address(es) (comma-separated) for this notification       |
 
 
 ###### 5. CONFIGURE POSTGRES DATABASE
 
-Open `db.js` and change the postgres connection url, which is currently set at '**postgres://postgres:password@localhost:5432/postgres**'
-
-
-You will also need to setup your tables, so run the following postgres statements:
+You will also need to setup your tables, so run the following postgres statements to create the required tables:
 
     CREATE TABLE pledges (
     	"id"            serial,
@@ -63,30 +72,7 @@ You will also need to setup your tables, so run the following postgres statement
     );
 
 
-###### 6. CONFIGURE RECAPTCHA AND MAILER
-
-Open `routes/index.js` and replace '**your_recaptcha_site_key_here**' and '**your_recaptcha_secret_key_here**' with your actual keys provided by Google.
-
-
-Then, alter your smtp mail credentials (replace "**example@gmail.com**" and "**password**" in the section of code that is shown below):
-
-    mailer.extend(app, {
-    	from: 'no-reply@badgetheworld.org',
-    	host: 'smtp.gmail.com', // hostname
-    	secureConnection: true, // use SSL
-    	port: 465, // port for secure SMTP
-    	transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts
-    	auth: {
-    		user: ((process.env.SMTP_USER !== undefined) ? process.env.SMTP_USER : 'example@gmail.com'),
-    		pass: ((process.env.SMTP_PASSWD !== undefined) ? process.env.SMTP_PASSWD : 'password')
-    	}
-    });
-
-
-Finally, look for the 2 lines that contain "process.env.CONTACT_NOTIFICATION_ADDRESSES" and "process.env.PLEDGE_NOTIFICATION_ADDRESSES" and replace the string "example@gmail.com" with the relevant email addresses for that notification.
-
-
-###### 7. RUN THE SERVER
+###### 6. RUN THE SERVER
 
     node bin/www
 
