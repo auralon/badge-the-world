@@ -25,15 +25,15 @@ Copy `.env.example` to `.env` and adjust the variables accordingly.
 
 | ENV VAR                        | ACTION                                                                                      |
 | ------------------------------ | ------------------------------------------------------------------------------------------- |
-| PORT                           | This can most likely remain unchanged, unless another service is using port 3000 (eg: ntop) |
-| SESSION_SECRET                 | Change this to something unique and strong                                                  |
-| DATABASE_URL                   | Change this to your postgres connection url                                                 |
-| RECAPTCHA_SITE_KEY             | Change this to the key provided to you by Google                                            |
-| RECAPTCHA_SECRET_KEY           | Change this to the key provided to you by Google                                            |
-| SMTP_USER                      | Change this to your SMTP mail username                                                      |
-| SMTP_PASSWD                    | Change this to your SMTP mail password                                                      |
-| CONTACT_NOTIFICATION_ADDRESSES | Change this to the relevant email address(es) (comma-separated) for this notification       |
-| PLEDGE_NOTIFICATION_ADDRESSES  | Change this to the relevant email address(es) (comma-separated) for this notification       |
+| **PORT**                           | This can most likely remain unchanged, unless another service is using port 3000 (eg: ntop) |
+| **SESSION_SECRET**                 | Change this to something unique and strong                                                  |
+| **DATABASE_URL**                   | Change this to your postgres connection url                                                 |
+| **RECAPTCHA_SITE_KEY**             | Change this to the key provided to you by Google                                            |
+| **RECAPTCHA_SECRET_KEY**           | Change this to the key provided to you by Google                                            |
+| **SMTP_USER**                      | Change this to your SMTP mail username                                                      |
+| **SMTP_PASSWD**                    | Change this to your SMTP mail password                                                      |
+| **CONTACT_NOTIFICATION_ADDRESSES** | Change this to the relevant email address(es) (comma-separated) for this notification       |
+| **PLEDGE_NOTIFICATION_ADDRESSES**  | Change this to the relevant email address(es) (comma-separated) for this notification       |
 
 
 ###### 5. CONFIGURE POSTGRES DATABASE
