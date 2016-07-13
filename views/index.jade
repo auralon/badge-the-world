@@ -3,7 +3,7 @@ extends layout
 block stylesheets
 	link(rel='stylesheet', type='text/css', href='/stylesheets/animation.css')
 	link(rel='stylesheet', type='text/css', href='/stylesheets/fontello.css')
-	link(rel='stylesheet', type='text/css', href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css')
+	link(rel='stylesheet', type='text/css', href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css')
 	link(rel='stylesheet', type='text/css', href='/stylesheets/main.css')
 	link(rel='stylesheet', type='text/css', href='/stylesheets/jquery.mCustomScrollbar.min.css')
 	link(rel='stylesheet', type='text/css', href='/stylesheets/jquery.growl.css')
@@ -26,7 +26,8 @@ block content
 	#phone-notification.hide
 
 block scripts
-	script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js')
+	script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js')
+	script(type='text/javascript', src='https://www.mapquestapi.com/sdk/leaflet/v2.2/mq-map.js?key=XGIrRQRzVyYLDZBJ0U5H7zgZjFyv5Oc4')
 	script(type='text/javascript', src='/javascripts/vendor/jquery.mousewheel.min.js')
 	script(type='text/javascript', src='/javascripts/vendor/jquery.mCustomScrollbar.min.js')
 	script(type='text/javascript', src='/javascripts/vendor/jquery.highlighttext.js')
@@ -98,12 +99,12 @@ block scripts
 			||  MAP  ||
 			\*=======*/
 
-			var map = L.map('map', { tileLayer: { noWrap: false} }).setView([10, 10], 3);
+			var map = L.map('map', { tileLayer: { noWrap: false}, zoom: 18, layers: MQ.mapLayer() }).setView([10, 10], 3);
 
-			L.tileLayer('https://otile1-s.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>',
-				maxZoom: 18
-			}).addTo(map);
+			//- L.tileLayer('https://otile1-s.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+			//- 	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>',
+			//- 	maxZoom: 18
+			//- }).addTo(map);
 
 
 			/*===========*\
