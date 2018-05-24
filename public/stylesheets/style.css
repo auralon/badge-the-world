@@ -459,6 +459,18 @@ hr {
 	color: white;
 	font-weight: bold;
 	font-size: 0.9rem;
+	display: block;
+	margin: auto;
+}
+#contactLink a.remove {
+	margin-top: 10px;
+}
+#contactLink a.privacy {
+	margin-top: 4px;
+}
+#contactLink a.remove,
+#contactLink a.privacy {
+	font-size: 0.75rem;
 }
 #searchBox {
 	position: relative;
@@ -620,37 +632,37 @@ hr {
 	background-position: 0px -72px;
 }
 #content a.filter > span:first-of-type span.charitableProject {
-	background-position: 0px -96px; 
+	background-position: 0px -96px;
 }
 #content a.filter > span:first-of-type span.citizenship {
-	background-position: 0px -120px; 
+	background-position: 0px -120px;
 }
 #content a.filter > span:first-of-type span.educationFormal {
-	background-position: 0px -144px; 
+	background-position: 0px -144px;
 }
 #content a.filter > span:first-of-type span.educationInformal {
-	background-position: 0px -168px; 
+	background-position: 0px -168px;
 }
 #content a.filter > span:first-of-type span.engagement {
-	background-position: 0px -192px; 
+	background-position: 0px -192px;
 }
 #content a.filter > span:first-of-type span.other {
-	background-position: 0px -216px; 
+	background-position: 0px -216px;
 }
 #content a.filter > span:first-of-type span.socialInclusion {
-	background-position: 0px -240px; 
+	background-position: 0px -240px;
 }
 #content a.filter > span:first-of-type span.workforceDevelopment {
-	background-position: 0px -264px; 
+	background-position: 0px -264px;
 }
 #content a.filter > span:first-of-type span.vocational {
-	background-position: 0px -288px; 
+	background-position: 0px -288px;
 }
 #content a.filter > span:first-of-type span.careers {
-	background-position: 0px -312px; 
+	background-position: 0px -312px;
 }
 #content a.filter > span:first-of-type span.unassigned {
-	background-position: 0px -336px; 
+	background-position: 0px -336px;
 }
 #content a.filter span:last-of-type {
 	padding-left: 5px;
@@ -702,7 +714,7 @@ hr {
 	max-width: 90%;
 }
 
-/* 
+/*
  MODAL
  */
 #modalContainer {
