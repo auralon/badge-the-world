@@ -30,9 +30,12 @@
     "pg": "^4.5.5",
     "pg-hstore": "^2.3.2",
     "querystring": "~0.2.0",
+    "request": "^2.72.0",
     "sequelize": "^3.22.0",
     "serve-favicon": "^2.2.0",
     "should": "~2.1.0",
-    "vhost": "~3.0.0"
-  }
+    "vhost": "~3.0.0",
+    "vows": "^0.8.1"
+  },
+  "node": "7.10.0"
 }
