@@ -160,11 +160,14 @@ block scripts
 					addLocation(data[i]);
 				}
 			});
-			
+
+			function isFloat(n){
+			    return Number(n) === n && n % 1 !== 0;
+			}
+
 			function addLocation(entry, open) {
 
-
-				if (entry.lat !== null && entry.lon !== null) {
+				if (entry.lat !== null && entry.lon !== null && isFloat(parseFloat(entry.lat)) && isFloat(parseFloat(entry.lon))) {
 
 					var description = '<pre>' + entry.idea.replace(/(?:\\[rn])+/g, "\r\n\r\n") + '</pre>';
 
@@ -532,13 +535,13 @@ block scripts
 				term = term.toLowerCase();
 				var $form = $('form#searchPledges');
 				var $resultsMarkup = $('#searchResultsList');
-			
+
 				var results = [];
-				
+
 				for (var i = pledges.length - 1; i >= 0; i--) {
-					if ((pledges[i].country.toLowerCase().indexOf(term) !== -1) || 
-						(pledges[i].idea.toLowerCase().indexOf(term) !== -1) || 
-						(pledges[i].twitterHandle.toLowerCase().indexOf(term) !== -1) || 
+					if ((pledges[i].country.toLowerCase().indexOf(term) !== -1) ||
+						(pledges[i].idea.toLowerCase().indexOf(term) !== -1) ||
+						(pledges[i].twitterHandle.toLowerCase().indexOf(term) !== -1) ||
 						(pledges[i].location.toLowerCase().indexOf(term) !== -1)) {
 						results.push(pledges[i]);
 					}
@@ -650,8 +653,8 @@ block scripts
 
 					$.each(markers, function(i, v) {
 						if (
-							($.inArray(markers[i].topic, activeFilters) !== -1) && 
-							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) && 
+							($.inArray(markers[i].topic, activeFilters) !== -1) &&
+							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) &&
 							((markers[i].country == country) ||	(country == "All") || ((country == "Europe") && ($.inArray(markers[i].country, europeanCountries) !== -1)))
 							) {
 							markers[i].setOpacity(1);
@@ -663,7 +666,7 @@ block scripts
 					// filters off
 					$.each(markers, function(i, marker) {
 						if (
-							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) && 
+							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) &&
 							((markers[i].country == country) ||	(country == "All") || ((country == "Europe") && ($.inArray(markers[i].country, europeanCountries) !== -1)))
 							) {
 							markers[i].setOpacity(1);
@@ -717,7 +720,7 @@ block scripts
 			/*========*\
 			||  TABS  ||
 			\*========*/
-			
+
 			$('#tabs li a').on('click', function(e) {
 				e.preventDefault();
 
@@ -915,7 +918,7 @@ block scripts
 			Hammer(document.getElementById('keyMobile')).on('swipeleft', function(e) {
 				$('#keyMobile').addClass('open');
 			});
-			
+
 			Hammer(document.getElementById('keyMobile')).on('swiperight', function(e) {
 				$('#keyMobile').removeClass('open');
 			});
