@@ -1,0 +1,878 @@
+extends layout
+
+block stylesheets
+	link(rel='stylesheet', type='text/css', href='/stylesheets/animation.css')
+	link(rel='stylesheet', type='text/css', href='/stylesheets/fontello.css')
+	link(rel='stylesheet', type='text/css', href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css')
+	link(rel='stylesheet', type='text/css', href='/stylesheets/main.css')
+	link(rel='stylesheet', type='text/css', href='/stylesheets/jquery.mCustomScrollbar.min.css')
+	link(rel='stylesheet', type='text/css', href='/stylesheets/jquery.growl.css')
+	link(rel='stylesheet', type='text/css', href='/stylesheets/jquery.ferro.ferroMenu.css')
+	link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
+
+	style(type='text/css').
+			.g-recaptcha > div:first-of-type > div:first-of-type {
+					margin: auto;
+					margin-top: 25px;
+			}
+
+block content
+	#map
+		include ./includes/key.jade
+	include ./includes/key-mobile.jade
+	img#tooltip(src='/images/pledge-here-text.svg', style='width: 80px;')
+	#phone-notification.hide
+
+block scripts
+	script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.js')
+	script(type='text/javascript', src='https://www.mapquestapi.com/sdk/leaflet/v2.2/mq-map.js?key=XGIrRQRzVyYLDZBJ0U5H7zgZjFyv5Oc4')
+	script(type='text/javascript', src='/javascripts/vendor/jquery.mousewheel.min.js')
+	script(type='text/javascript', src='/javascripts/vendor/jquery.mCustomScrollbar.min.js')
+	script(type='text/javascript', src='/javascripts/vendor/jquery.highlighttext.js')
+	script(type='text/javascript', src='/javascripts/vendor/jquery.growl.js')
+	script(type='text/javascript', src='/javascripts/vendor/jquery.ferro.ferroMenu-1.2.3.min.js')
+	script(type='text/javascript', src='/javascripts/vendor/hammer.min.js')
+	script.
+		$(document).ready(function() {
+
+			var showModal = "#{showModal}";
+			var pledge = "#{pledge}";
+			var isMobile = ("#{device}" == "phone" ? true : false);
+			var pledges = [];
+			var formComplete = false;
+			var europeanCountries = [
+				'Albania',
+				'Andorra',
+				'Armenia',
+				'Austria',
+				'Azerbaijan',
+				'Belarus',
+				'Belgium',
+				'Bosnia and Herzegovina',
+				'Bulgaria',
+				'Croatia',
+				'Cyprus',
+				'Czech Republic',
+				'Denmark',
+				'Estonia',
+				'Finland',
+				'France',
+				'Georgia',
+				'Germany',
+				'Greece',
+				'Hungary',
+				'Iceland',
+				'Ireland',
+				'Italy',
+				'Kazakhstan',
+				'Latvia',
+				'Liechtenstein',
+				'Lithuania',
+				'Luxembourg',
+				'Macedonia, the former Yugoslav Republic of',
+				'Malta',
+				'Moldova, Republic of',
+				'Monaco',
+				'Montenegro',
+				'Netherlands',
+				'Norway',
+				'Poland',
+				'Portugal',
+				'Romania',
+				'Russian Federation',
+				'San Marino',
+				'Serbia',
+				'Slovakia',
+				'Slovenia',
+				'Spain',
+				'Sweden',
+				'Switzerland',
+				'Turkey',
+				'Ukraine',
+				'United Kingdom'
+			];
+
+
+			/*=======*\
+			||  MAP  ||
+			\*=======*/
+
+			var map = L.map('map', { tileLayer: { noWrap: false}, zoom: 18, layers: MQ.mapLayer() }).setView([10, 10], 3);
+
+			//- L.tileLayer('https://otile1-s.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+			//- 	attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>. Tiles courtesy of <a href="http://www.mapquest.com/" target="_blank">MapQuest</a>',
+			//- 	maxZoom: 18
+			//- }).addTo(map);
+
+
+			/*===========*\
+			||  MARKERS  ||
+			\*===========*/
+
+			var markers = [];
+
+			var LeafIcon = L.Icon.extend({
+				options: {
+					shadowUrl: '/images/markers/marker_shadow.png',
+					iconSize:     [24, 24],
+					shadowSize:   [24, 24],
+					iconAnchor:   [12, 24],
+					shadowAnchor: [12, 12],
+					popupAnchor:  [0, -24],
+				}
+			});
+
+			var icons = {
+				"Charitable Project": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_dark_blue_24x24.png'}),
+				"Citizenship": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_dark_green_24x24.png'}),
+				"Education Formal": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_light_blue_24x24.png'}),
+				"Education Informal": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_light_green_24x24.png'}),
+				"Engagement": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_orange_24x24.png'}),
+				"Other": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_pink_24x24.png'}),
+				"Social Inclusion": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_purple_24x24.png'}),
+				"Workforce Development": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_red_24x24.png'}),
+				//- "Vocational": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_wine_24x24.png'}),
+				//- "Careers": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_yellow_24x24.png'}),
+				"Unassigned": new LeafIcon({iconUrl: '/images/spritesheet_images/24x24/marker_grey_24x24.png'}),
+				pledge: new LeafIcon({iconUrl: '/images/pledge-marker.png'})
+			}
+
+			var pledgeUrl = "/getPledges";
+			var now = new Date();
+
+			$.getJSON(pledgeUrl, function(data) {
+
+				pledges = data;
+
+				for (var i = 0; i < data.length; i++) {
+
+					var pledgeDate = new Date(data[i].createdAt);
+
+					//- calculate timeframe based on createdAt property
+					data[i].timeframe = {
+						today: ((now.getDate() == pledgeDate.getDate()) && (now.getMonth() == pledgeDate.getMonth()) && (now.getFullYear() == pledgeDate.getFullYear())),
+						month: ((now.getMonth() == pledgeDate.getMonth()) && (now.getFullYear() == pledgeDate.getFullYear())),
+						year: (now.getFullYear() == pledgeDate.getFullYear())
+					}
+
+					addLocation(data[i]);
+				}
+			});
+
+			function isFloat(n){
+			    return Number(n) === n && n % 1 !== 0;
+			}
+
+			function addLocation(entry, open) {
+
+				if (entry.lat !== null && entry.lon !== null && isFloat(parseFloat(entry.lat)) && isFloat(parseFloat(entry.lon))) {
+
+					var description = '<pre>' + entry.idea.replace(/(?:\\[rn])+/g, "\r\n\r\n") + '</pre>';
+
+					if (entry.numberOfPeople) {
+						description += '<b>Number of people impacted:</b> ' + entry.numberOfPeople + '<br>';
+					}
+
+					if (entry.createdAt) {
+						var date = new Date(entry.createdAt);
+						description += '<b>Date of pledge:</b> ' + date.toDateString() + '<br>';
+					}
+
+					if (entry.topic) {
+						description += '<b>Topic:</b> ' + entry.topic + '<br>';
+					}
+
+					if (entry.twitterHandle) {
+						description += '<b>Twitter Username:</b> <a href="https://twitter.com/' + entry.twitterHandle + '">@' + entry.twitterHandle + '</a><br>';
+					}
+
+					description += '<div class="links"><a href="http://#{siteUrl}/?pledge=' + entry.id + '"><i class="icon-link"></i>permalink</a> ' +
+								   '<a href="https://twitter.com/intent/tweet?text=Check out this pledge!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=' + entry.id + '" id="twitter-share"><i class="icon-twitter"></i>share on twitter</a></div>';
+
+					var marker = L.marker(
+						[ entry.lat, entry.lon ],
+						{
+							icon: icons[entry.topic],
+							title: entry.location,
+						}
+					).bindPopup(description);
+
+					// bind window events to marker
+					marker.on('popupclose', function(e) {
+						tooltipVisible = true;
+					});
+
+					marker.on('mouseover', function(e) {
+						tooltipVisible = false;
+					});
+
+					marker.on('mouseout', function(e) {
+						tooltipVisible = true;
+					});
+
+					// configure additional custom marker properties
+					marker.topic = entry.topic;
+					marker.timeframe = entry.timeframe;
+					marker.country = entry.country;
+					marker.id = entry.id;
+					map.addLayer(marker);
+					markers.push(marker);
+
+					if (entry.id == pledge) {
+						map.setView([entry.lat, entry.lon], 6);
+						marker.openPopup();
+					}
+
+					if (typeof open !== "undefined") {
+						marker.openPopup();
+					}
+
+				}
+
+			}
+
+
+			/*=============*\
+			||  GEOLOCATE  ||
+			\*=============*/
+
+			$('#addressContainer a').on('click', function(e) {
+				e.preventDefault();
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(function(position) {
+						dropPledgeMarker(position.coords.latitude, position.coords.longitude, true);
+					});
+				} else {
+					notify("Geolocation is not supported by this browser.", "error");
+				}
+			});
+
+
+			/*=================================*\
+			||  NEW PLEDGE - DROP/MOVE MARKER  ||
+			\*=================================*/
+
+			var newPledge = null;
+
+			map.on('click', function(e) {
+				dropPledgeMarker(e.latlng.lat, e.latlng.lng, true);
+			});
+
+			function dropPledgeMarker(lat, lon, detectAddress) {
+
+				if (newPledge === null) {
+					newPledge = new L.marker([lat, lon], {icon:icons['pledge'], draggable:'true'});
+					newPledge.on('dragend', function(event){
+							var newPledge = event.target;
+							var position = newPledge.getLatLng();
+							setCoordinates(position.lat, position.lng);
+					});
+					map.addLayer(newPledge);
+
+					// ensure that our form is ready (it may have been filled and submitted already)
+					if (formComplete === true) {
+						resetPledgeForm();
+					}
+				} else {
+					newPledge.setLatLng([lat, lon]);
+				}
+
+				setCoordinates(lat, lon);
+
+				// now do a reverse lookup to grab the country
+				var url = 'https://nominatim.openstreetmap.org/reverse?lat=' + lat + '&lon=' + lon + '&format=json';
+
+				$.get(url, function(response) {
+					if (typeof response.address !== "undefined") {
+
+						if (detectAddress)	$('#address').val(response.display_name);
+
+						$('#pledgeCountry').val(response.address.country);
+
+						$('#continent').val($('#pledgeCountry option:selected').data('continent'));
+					}
+				});
+
+				// open sidebar to pledge tab if required
+				if ($('aside').hasClass('closed')) {
+					$('aside').toggleClass('closed');
+					$('#toggleSidebar').toggleClass('closed');
+					$('#toggleSidebar').toggleClass('close');
+				}
+
+				$('#tabs li a[data-content=pledge]').trigger('click');
+			}
+
+			var setCoordinates = function(lat, lon) {
+				$('input[name="lat"]').val(lat);
+				$('input[name="lon"]').val(lon);
+			}
+
+			// update continent when country is changed manually
+			$('#pledgeCountry').on('change', function() {
+				$('#continent').val($(this).find('option:selected').data('continent'));
+			});
+
+
+			/*=========================*\
+			||  NEW PLEDGE - CONTINUE  ||
+			\*=========================*/
+
+			$(document).ready(function() {
+				console.log("#{locationName}");
+				var address = encodeURIComponent("#{locationName}");
+				var url = 'https://nominatim.openstreetmap.org/search?q=' + address + '&format=json';
+
+				$.get(url, function(response) {
+					if (typeof response[0] !== "undefined") {
+
+						var lon = response[0].lon;
+						var lat = response[0].lat;
+						map.setView([lat, lon], 13);
+
+					} else {
+						notify("Could not find that address", "error");
+					}
+				});
+			});
+
+			$('#continue2').on('click', function(e) {
+				e.preventDefault();
+				if ($('#stageTwo').is(':hidden')) {
+					$('#continue1').trigger('click');
+					return;
+				}
+				$(this).hide();
+				$('#stageTwo').addClass('done');
+				$('.areYouSure').fadeOut();
+				$('#stageThree').fadeIn(function() {
+					$('#pledge').mCustomScrollbar('scrollTo','bottom');
+				});
+			});
+
+			$('#createPledge').submit(function(e) {
+				e.preventDefault();
+
+				var $button = $('#pledgeSubmit');
+				buttonSwap($button);
+
+				var $form = $(this);
+
+				$.post($form.attr('action'), $(this).serialize(), function(response) {
+					if (response.status == 'success') {
+						notify('Thank you! Your pledge has been saved successfully', 'notice');
+						buttonSwap($button, 'success');
+
+						//- calculate timeframe based on createdAt property
+						var pledgeDate = new Date(response.pledge.createdAt);
+						response.pledge.timeframe = {
+							today: ((now.getDate() == pledgeDate.getDate()) && (now.getMonth() == pledgeDate.getMonth()) && (now.getFullYear() == pledgeDate.getFullYear())),
+							month: ((now.getMonth() == pledgeDate.getMonth()) && (now.getFullYear() == pledgeDate.getFullYear())),
+							year: (now.getFullYear() == pledgeDate.getFullYear())
+						}
+
+						// add new marker
+						addLocation(response.pledge, "openPopup");
+
+						// let's update the state of the form
+						formComplete = true;
+
+						// remove new pledge marker and reset
+						map.removeLayer(newPledge);
+						newPledge = null;
+
+						$('#stageThree').addClass('done');
+						$('#stageFour').fadeIn(function() {
+							$('#pledge').mCustomScrollbar('scrollTo','bottom');
+
+							var twitterShareUrl = "https://twitter.com/intent/tweet?text=I pledged to badge the world!&via=badgetheworld&hashtags=OpenBadges&url=http://#{siteUrl}?pledge=" + response.pledge.id;
+							$('#twitterShare').attr('href', twitterShareUrl);
+						});
+
+					} else {
+						notify('There was a problem saving your pledge, please try again later', 'error');
+						buttonSwap($button, 'revert');
+					}
+				});
+			});
+
+			$('#pledgeSubmit').on('click', function(e) {
+				e.preventDefault();
+				if ($(this).prop('disabled') == false) {
+					$('#pledgeSubmitHidden').trigger('click');
+				}
+			});
+
+
+			/*=====================*\
+			||  RESET PLEDGE FORM  ||
+			\*=====================*/
+
+			function resetPledgeForm() {
+				$('#stageOne, #stageTwo, #stageThree').removeClass('done');
+				$('#stageTwo, #stageThree, #stageFour').fadeOut();
+				$('.areYouSure, #continue2').show();
+				$('#continue1').html('Continue');
+				$('#pledgeSubmit').prop('disabled', false);
+				$('#pledgeSubmit').find('span.text').html('Submit');
+				$('#idea, #numberOfPeople, #address, #email, #name, #twitterHandle, #organisation').val('');
+				$('#pledge input[type=checkbox]').prop('checked', false);
+				formComplete = false;
+			}
+
+
+			/*======================*\
+			||  CONTACT SUBMISSION  ||
+			\*======================*/
+
+			$('#contactForm').submit(function(e) {
+				e.preventDefault();
+
+				var $button = $('#contactSubmit');
+				buttonSwap($button);
+
+				var $form = $(this);
+
+				$.post($form.attr('action'), $form.serialize(), function(response) {
+					if (response.status == 'success') {
+						notify('Your message has been sent successfully! Thank you.', 'notice');
+						buttonSwap($button, 'success');
+					} else {
+						notify('There was a problem sending your message, please try again later', 'error');
+						buttonSwap($button, 'revert');
+					}
+				});
+
+			});
+
+			$('#contactSubmit').on('click', function(e) {
+				e.preventDefault();
+				$('#contactSubmitHidden').trigger('click');
+			});
+
+
+			/*====================*\
+			||  BUTTON SWAP H@CK  ||
+			\*====================*/
+
+			function buttonSwap(btn, action) {
+				if (typeof action === "undefined") {
+					btn.prop('disabled', true);
+					btn.find('span.text').hide();
+					btn.find('span.spinner').show();
+				} else if (action == 'revert') {
+					btn.prop('disabled', false);
+					btn.find('span.text').show();
+					btn.find('span.spinner').hide();
+				} else {
+					btn.find('span.text').html('&#x2713;').show();
+					btn.find('span.spinner').hide();
+				}
+			}
+
+
+			/*==========*\
+			||  SEARCH  ||
+			\*==========*/
+
+			var t;
+
+			$('#searchInput').keyup(function(e) {
+
+				clearInterval(t);
+				var $this = $(this);
+
+				if ($('#searchInput').val().length >= 2) {
+					t = setTimeout(function() {
+						if ($('#searchFilters').is(':visible')) {
+							$('#searchFilters').hide();
+							$('#searchResults').show();
+						}
+						searchPledges($this.val());
+					}, 500);
+				} else {
+					if ($('#searchFilters').is(':hidden')) {
+						$('#searchFilters').show();
+						$('#searchResults').hide();
+					}
+				}
+			});
+
+			$('form#searchPledges').submit(function(e) {
+				e.preventDefault();
+				//- searchPledges($('#searchInput').val());
+			});
+
+			$('form#searchPledges a.submit').on('click', function(e) {
+				e.preventDefault();
+				searchPledges($('#searchInput').val());
+			});
+
+			function searchPledges(term) {
+
+				closeModal();
+
+				term = term.toLowerCase();
+				var $form = $('form#searchPledges');
+				var $resultsMarkup = $('#searchResultsList');
+
+				var results = [];
+
+				for (var i = pledges.length - 1; i >= 0; i--) {
+					if ((pledges[i].country.toLowerCase().indexOf(term) !== -1) ||
+						(pledges[i].idea.toLowerCase().indexOf(term) !== -1) ||
+						(pledges[i].twitterHandle.toLowerCase().indexOf(term) !== -1) ||
+						(pledges[i].location.toLowerCase().indexOf(term) !== -1)) {
+						results.push(pledges[i]);
+					}
+				}
+
+				// update search results section on page
+				$('#searchTermCount').html(results.length);
+				$('#searchTerm').html(term);
+				$resultsMarkup.html(''); // reset!
+
+				for (var i = results.length - 1; i >= 0; i--) {
+
+					var idea = results[i].idea.replace(/(?:\\[rn])+/g, "\r\n\r\n");
+
+					var node =	'<li><h3>' + results[i].location + '</h3>' +
+									'<p><pre>' + idea + '</pre></p>' +
+									'<ul>';
+
+					if (results[i].numberOfPeople) {
+						node += '<li><span>Number of people impacted:</span> ' + results[i].numberOfPeople + '</li>';
+					}
+
+					if (results[i].createdAt) {
+						var date = new Date(results[i].createdAt);
+						node += '<li><span>Date of pledge:</span> ' + date.toDateString() + '</li>';
+					}
+
+					if (results[i].twitterHandle) {
+						node += '<li><span>Twitter Username:</span> <a href="https://twitter.com/' + results[i].twitterHandle + '">@' + results[i].twitterHandle + '</a>';
+					}
+
+					$node = $(node);
+
+					$node.highlightText(term,"highlight",false);
+
+					$node.append('<a class="viewPledge" data-id="' + results[i].id + '" href="/?pledge=' + results[i].id + '">View <img src="/images/view.png"></a></li>');
+
+					$resultsMarkup.append($node);
+				};
+
+				// display results
+				$('#searchFilters').hide();
+				$('#searchResults').show();
+
+				$('#searchResults').append($resultsMarkup);
+
+			}
+
+			/*=============================*\
+			||  VIEW PLEDGE (NON-REFRESH)  ||
+			\*=============================*/
+
+			$(document).delegate('.viewPledge', 'click', function(e) {
+				e.preventDefault();
+				var id = $(this).data('id');
+
+				if (isMobile) $('#toggleSidebar').trigger('click');
+
+				$.each(markers, function(i, marker) {
+					if (marker.id == id) {
+						map.setView([marker.getLatLng().lat, marker.getLatLng().lng], 6);
+						marker.openPopup();
+
+						// TODO: need to implement some offset method to account for sidebar visibility
+					}
+				});
+			});
+
+
+			/*===========*\
+			||  FILTERS  ||
+			\*===========*/
+
+			var country = 'All';
+
+			$('a.filter.time').on('click', function(e) {
+				e.preventDefault();
+				$('a.filter.time').not(this).removeClass('active');
+				$(this).addClass('active');
+
+				filter();
+			});
+
+			$('a.filter.topic').on('click', function(e) {
+				e.preventDefault();
+				$(this).toggleClass('active');
+
+				filter();
+			});
+
+			$('#country').on('change', function(e) {
+				e.preventDefault();
+				country = this.value == '----------' ? 'All' : this.value;
+
+				filter();
+			});
+
+			function filter() {
+
+				var timeFilter = $('a.filter.time.active').data('time');
+
+				if ($('a.filter.topic.active').length > 0) {
+					// filters on
+					var activeFilters = [];
+
+					$.each($('a.filter.topic.active'), function(i, v) {
+						activeFilters.push($(v).data('topic'));
+					});
+
+					$.each(markers, function(i, v) {
+						if (
+							($.inArray(markers[i].topic, activeFilters) !== -1) &&
+							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) &&
+							((markers[i].country == country) ||	(country == "All") || ((country == "Europe") && ($.inArray(markers[i].country, europeanCountries) !== -1)))
+							) {
+							markers[i].setOpacity(1);
+						} else {
+							markers[i].setOpacity(0);
+						}
+					});
+				} else {
+					// filters off
+					$.each(markers, function(i, marker) {
+						if (
+							(timeFilter == "all" || markers[i].timeframe[timeFilter] == true) &&
+							((markers[i].country == country) ||	(country == "All") || ((country == "Europe") && ($.inArray(markers[i].country, europeanCountries) !== -1)))
+							) {
+							markers[i].setOpacity(1);
+						} else {
+							markers[i].setOpacity(0);
+						}
+					});
+				}
+			}
+
+
+			/*==============*\
+			||  SCROLLBARS  ||
+			\*==============*/
+
+			(function($){
+				$(window).load(function(){
+					$(".content").mCustomScrollbar({
+						theme: 'dark-3'
+					});
+				});
+			})(jQuery);
+
+			/*==================*\
+			||  SIDEBAR TOGGLE  ||
+			\*==================*/
+
+			$('#toggleSidebar').on('click', function(e) {
+				e.preventDefault();
+
+				closeModal();
+
+				setSidebarWidth();
+
+				$('aside').toggleClass('closed');
+				$(this).toggleClass('closed');
+				$(this).toggleClass('close');
+			});
+
+			function setSidebarWidth() {
+				var asideWidth = $('aside').outerWidth();
+				setStyle('aside.closed{left:-' + asideWidth + 'px;}');
+			}
+
+			if (isMobile) {
+				setTimeout(function() {
+					setSidebarWidth();
+				}, 600);
+			}
+
+			/*========*\
+			||  TABS  ||
+			\*========*/
+
+			$('#tabs li a').on('click', function(e) {
+				e.preventDefault();
+
+				var currentSelection = $(this).data('content');
+
+				var tabsClasses = ['pledge','about','twitter','contact','search'];
+				$('#content').removeClass(tabsClasses.join(" "));
+				$('#content').addClass(currentSelection);
+
+				$('#tabs li').removeClass('active');
+				$(this).parent().addClass('active');
+
+				$('#content .content').hide();
+				$('#' + currentSelection).show();
+
+				// if this is the search tab, then ensure we show the filter section and not the results section
+				if (currentSelection == 'search') {
+					$('#searchFilters').show();
+					$('#searchResults').hide();
+				}
+			});
+
+
+			/*================================*\
+			||  UPDATE STYLESHEET ON THE FLY  ||
+			\*================================*/
+
+			function setStyle(cssText) {
+				var sheet = document.createElement('style');
+				sheet.type = 'text/css';
+				/* Optional */ window.customSheet = sheet;
+				(document.head || document.getElementsByTagName('head')[0]).appendChild(sheet);
+				return (setStyle = function(cssText, node) {
+					if(!node || node.parentNode !== sheet)
+						return sheet.appendChild(document.createTextNode(cssText));
+					node.nodeValue = cssText;
+					return node;
+				})(cssText);
+			};
+
+
+			/*=================*\
+			||  RESIZE ACTION  ||
+			\*=================*/
+
+			$(window).resize(function() {
+				var height = $('aside').outerHeight();
+				$('#content').outerHeight(height - 100 - 50 - 62);
+
+				var asideWidth = $('aside').outerWidth();
+				setStyle('aside.closed{left:-' + asideWidth + 'px;}');
+			});
+
+			$(window).trigger('resize');
+
+
+			/*===========*\
+			||  TWITTER  ||
+			\*===========*/
+
+			$.get('https://ajax.googleapis.com/ajax/services/feed/load?v=2.0&q=https://twitrss.me/twitter_user_to_rss/?user=badgetheworld&num=100', function(response) {
+				if (response.responseStatus == "200") {
+					var entries = response.responseData.feed.entries;
+					for (var i = 0; i < entries.length; i++) {
+						var date = entries[i].publishedDate.split(" ");
+						var entry = '<li class="twitterEntry"><h4>' + date[2] + ' ' + date[1] + ' <span>@badgetheworld</span></h4>'+
+									entries[i].content + '</li>'
+						$('#twitterFeed').append(entry);
+					};
+				}
+			}, 'jsonp');
+
+
+			/*===========*\
+			||  TOOLTIP  ||
+			\*===========*/
+
+			var currentMousePos = { x: -1, y: -1 };
+			$(document).mousemove(function(event) {
+				currentMousePos.x = event.pageX;
+				currentMousePos.y = event.pageY;
+				$('#tooltip').css({
+					left: currentMousePos.x - 95,
+					top: currentMousePos.y - 45
+				});
+			});
+
+			var tooltipVisible = true;
+
+			$('#map')[0].onmousemove = (function(e) {
+				var onmousestop = function() {
+					if (tooltipVisible && !$('.leaflet-popup-content-wrapper').is(':visible')) $('#tooltip').fadeIn();
+				}, thread;
+
+				return function() {
+					$('#tooltip').fadeOut();
+					clearTimeout(thread);
+					thread = setTimeout(onmousestop, 600);
+				};
+			})();
+
+			$('body').delegate('aside, #tooltip, .leaflet-popup-pane, #ferromenu-controller-0, li.desktop', 'mouseenter', function() {
+				tooltipVisible = false;
+			}).delegate('aside, #tooltip, .leaflet-popup-pane, #ferromenu-controller-0, li.desktop', 'mouseleave', function() {
+				tooltipVisible = true;
+			});
+
+
+
+			/*=================*\
+			||  NOTIFICATIONS  ||
+			\*=================*/
+
+			notify = function(msg, type) {
+				if (isMobile === true) {
+
+					if (typeof type == "undefined") {
+						msg = '<i class="icon-ok-circled2"></i>' + msg;
+					} else if (type == "error") {
+						msg = '<i class="icon-cancel-circled2"></i>' + msg;
+					}
+
+					$('#phone-notification').html(msg);
+					$('#phone-notification').removeClass('hide');
+					setTimeout(function() {
+						$('#phone-notification').addClass('hide');
+						setTimeout(function() {
+							$('#phone-notification').html('');
+						},1200);
+					},3600);
+				} else {
+					if (typeof type == "undefined") {
+						$.growl({ title: "Growl", message: msg });
+					} else if (type == "error") {
+						$.growl.error({ message: msg });
+					} else if (type == "notice") {
+						$.growl.notice({ message: msg });
+					} else if (type == "warning") {
+						$.growl.warning({ message: msg });
+					}
+				}
+			}
+
+			/*==================*\
+			||  KEY -- DESKTOP  ||
+			\*==================*/
+
+			$("#key").ferroMenu({
+				position 	: "right-center",
+				delay 		: 50,
+				rotation 	: 720,
+				radius		: 250,
+				margin		: 40,
+				opened		: false
+			});
+
+
+			/*=================*\
+			||  KEY -- MOBILE  ||
+			\*=================*/
+
+			Hammer(document.getElementById('keyMobile')).on('swipeleft', function(e) {
+				$('#keyMobile').addClass('open');
+			});
+
+			Hammer(document.getElementById('keyMobile')).on('swiperight', function(e) {
+				$('#keyMobile').removeClass('open');
+			});
+
+			$('.phone #keyMobile > span').on('click', function(e) {
+				e.preventDefault();
+				$('#keyMobile').toggleClass('open');
+			});
+
+		});

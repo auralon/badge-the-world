@@ -95,6 +95,26 @@ router.get('/', [csrfProtection, recaptcha.middleware.render], function (req, re
 	);
 });
 
+router.get('/location/:locationName', [csrfProtection, recaptcha.middleware.render], function (req, res) {
+
+	var str = req.url.split('?')[1];
+	var qs = querystring.parse(str);
+
+	res.render('location',
+		{
+			title: "Badge the World - " + req.params.locationName,
+			pledge : qs.pledge,
+			showModal: false,
+			user : req.user,
+			csrfToken: req.csrfToken(),
+			device: req.device,
+			siteUrl: req.headers.host,
+			captcha:req.recaptcha,
+			locationName: req.params.locationName
+		}
+	);
+});
+
 /*
  RETRIEVE PLEDGES (AJAX)
  */
