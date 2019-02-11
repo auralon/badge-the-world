@@ -110,7 +110,8 @@ router.get('/location/:locationName', [csrfProtection, recaptcha.middleware.rend
 			device: req.device,
 			siteUrl: req.headers.host,
 			captcha:req.recaptcha,
-			locationName: req.params.locationName
+			locationName: req.params.locationName,
+			hideSidebar: "true"
 		}
 	);
 });

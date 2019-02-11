@@ -1,6 +1,6 @@
-aside(class=("#{device}" == "phone" ? "closed" : undefined))
+aside(class=(("#{device}" == "phone" || "#{hideSidebar}" == "true") ? "closed" : undefined))
     .buttons-container
-        button#toggleSidebar(type='button', role='button', aria-label='Toggle Navigation', class=("#{device}" == "phone" ? "lines-button arrow arrow-left closed" : "lines-button arrow arrow-left close"))
+        button#toggleSidebar(type='button', role='button', aria-label='Toggle Navigation', class=("#{device}" == "phone" || "#{hideSidebar}" == "true" ? "lines-button arrow arrow-left closed" : "lines-button arrow arrow-left close"))
             span.lines
     #logoContainer
         img#logo(src='/images/logo.svg', alt='')
