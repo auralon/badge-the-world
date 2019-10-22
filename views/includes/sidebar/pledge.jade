@@ -19,14 +19,25 @@
                     input#researchBadge(type='checkbox', name='researchBadge', value='Research Badges', role='checkbox')
                     | Research Badges
                 li
-                    input#issueBadge(type='checkbox', name='issueBadge', value='Issue Badges', role='checkbox')
-                    | Issue Badges
-                li
                     input#joinBadge(type='checkbox', name='joinBadge', value='Join the Badging Conversation', role='checkbox')
                     | Join the Badging Conversation
                 li
                     input#displayBadge(type='checkbox', name='displayBadge', value='Display Badges', role='checkbox')
                     | Display Badges
+            .clearfix
+            h2
+                | If you are an Open Badge Platform do you?
+                span.sub *Required fields
+            ul#platform
+                li
+                    input#issueBadges(type='checkbox', name='issueBadges', value='Issue Badges', role='checkbox')
+                    | Issue Badges
+                li
+                    input#displayBadges(type='checkbox', name='displayBadges', value='Display Badges', role='checkbox')
+                    | Display Badges
+                li
+                    input#hostBadges(type='checkbox', name='hostBadges', value='Host Badges', role='checkbox')
+                    | Host Badges
             .clearfix
             h2
                 | Tell us about your badging ideas... 

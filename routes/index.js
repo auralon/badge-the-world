@@ -167,13 +167,18 @@ router.post('/createPledge', [csrfProtection, recaptcha.middleware.verify], func
 
 	var fiveWays = [];
 	if (req.body.createBadge) fiveWays.push("Create or Design Badges");
-	if (req.body.issueBadge) fiveWays.push("Issue Badges");
 	if (req.body.displayBadge) fiveWays.push("Display Badges");
 	if (req.body.researchBadge) fiveWays.push("Research Badges");
 	if (req.body.joinBadge) fiveWays.push("Join the Badging Conversation");
 
+	var platformUsage = [];
+	if (req.body.issueBadges) platformUsage.push("Issue Badges");
+	if (req.body.displayBadges) platformUsage.push("Display Badges");
+	if (req.body.hostBadges) platformUsage.push("Host Badges");
+
 	Pledge.build({
 		fiveWays: fiveWays.join(", "),
+		platformUsage: platformUsage.join(", "),
 		idea : (req.body.idea ? req.body.idea : ""),
 		topic : req.body.topic,
 		numberOfPeople : (req.body.numberOfPeople ? req.body.numberOfPeople : ""),

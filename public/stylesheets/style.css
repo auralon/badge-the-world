@@ -548,18 +548,18 @@ hr {
 #content.contact input[type=text].half:nth-of-type(even), #content.contact input[type=email].half:nth-of-type(even) {
 	margin-right: 4%;
 }
-#fiveWays {
+#fiveWays, #platform {
 	padding: 0;
 }
-#fiveWays li {
+#fiveWays li, #platform li {
 	float: left;
 	width: 48%;
 }
-#fiveWays li:nth-of-type(odd) {
+#fiveWays li:nth-of-type(odd), #platform li:nth-of-type(odd) {
 	margin-right: 2%;
 	clear: both;
 }
-#fiveWays li input[type=checkbox], #fiveWays li input[type=radio] {
+#fiveWays li input[type=checkbox], #fiveWays li input[type=radio], #platform li input[type=checkbox], #platform li input[type=radio] {
 	margin-right: 15px;
 }
 #content button, #content a.button, input[type=submit] {

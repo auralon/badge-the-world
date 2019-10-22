@@ -7,6 +7,7 @@ var Pledge = db.sequelize.define('pledge', {
         primaryKey: true
     },
     "fiveWays"        : db.Sequelize.TEXT,
+    "platformUsage"   : db.Sequelize.TEXT,
     "idea"            : db.Sequelize.TEXT,
     "topic"           : db.Sequelize.TEXT,
     "numberOfPeople"  : db.Sequelize.TEXT,
